@@ -1,0 +1,12 @@
+<form action="{{ url_for('del_entry') }}" method=post class=del-entry>
+      <dl>
+	  
+	  <dt>Choose an entry <SELECT name="data" class=data>
+	  <li><h2>{{ data }}
+		{% for c in data %}
+			<OPTION value="{{ c }}">{{ c }}</option>
+		{% endfor %}
+		</SELECT>
+        <dd><input type=submit value=Del>
+      </dl>
+    </form>
