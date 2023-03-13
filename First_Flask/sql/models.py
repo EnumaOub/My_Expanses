@@ -12,11 +12,13 @@ class Entries(Base):
     __tablename__ = 'entries'
     id = Column(Integer, primary_key=True)
     title = Column(String(50), unique=True)
-    text = Column(String(120), unique=True)
+    comment = Column(String(120), unique=True)
+    expanses = Column(Integer, unique=True)
 
-    def __init__(self, title=None, text=None):
+    def __init__(self, title=None, comment=None, expanses=None):
         self.title = title
-        self.text = text
+        self.comment = comment
+        self.expanses = expanses
 
     def __repr__(self):
         return '<Title %r>' % (self.title)

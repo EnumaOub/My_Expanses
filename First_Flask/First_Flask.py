@@ -63,9 +63,8 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
     db = Entries
-    res=[request.form['title'], request.form['text']]
     
-    e = Entries(request.form['title'], request.form['text'])
+    e = Entries(request.form['title'], request.form['comment'], request.form['expanses'])
     print(e)
     db_session.add(e)
     db_session.commit()
