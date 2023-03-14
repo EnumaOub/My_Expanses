@@ -52,17 +52,18 @@ def initdb_command():
     
 @app.route('/')
 def show_entries():
-    db = Entries
     data=input_id()
     # cur = db.execute('select title, text from entries order by id desc')
     entries = Entries.query.all()
-    return render_template('show_entries.html', entries=entries, data=data)
+    with engine.connect() as db:
+        expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
+    print(expanse_tot)
+    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    db = Entries
     
     e = Entries(request.form['title'], request.form['comment'], request.form['expanses'])
     print(e)

@@ -13,9 +13,6 @@
       </dl>
     </form>
 
-
-  
-   
   <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
       <dl>
 	 
@@ -36,8 +33,12 @@
   {% for entry in entries %}
     <li><h2>{{ entry.title }}</h2><i>{{ entry.expanses }}</i><span>&#8364;</span>
       <br>{{ entry.comment|safe }}
+    
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
+  <ul class=expanse_tot>
+    <li><h2>Expanses Total</h2><i>{{ expanse_tot }}</i><span>&#8364;</span>
+    </ul>
   </ul>
 {% endblock %}
