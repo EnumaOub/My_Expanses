@@ -21,6 +21,7 @@ import pandas as pd
 from .sql.database import db_session, init_db, engine
 from .sql.models import Entries
 
+from datetime import datetime
 
 
 
@@ -59,14 +60,16 @@ def show_entries():
         expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
     print(expanse_tot)
     kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]
-    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=kd_exp)
+    today_date = datetime.today().strftime("%Y-%m-%d")
+    print(today_date)
+    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=kd_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    
-    e = Entries(request.form['title'], request.form['comment'], request.form['expanses'])
+    print(request.form['date_exp'])
+    e = Entries(request.form['title'], request.form['comment'], request.form['expanses'], request.form['date_exp'])
     print(e)
     db_session.add(e)
     db_session.commit()
@@ -77,19 +80,19 @@ def add_entry():
 def input_id():
     data2=[]
     with engine.connect() as db:
-        title = db.execute(text("""SELECT title FROM public.entries """))
+        comment = db.execute(text("""SELECT comment FROM public.entries """))
         idd = db.execute(text("""SELECT id FROM public.entries """))
         id_val=[]
-        title_val=[]
-        for (idd_v , title_v )in zip(idd, title):
+        comment_val=[]
+        for (idd_v , comment_v )in zip(idd, comment):
             id_val.append(idd_v[0])
-            title_val.append(title_v[0])
-            data2.append([idd_v[0], title_v[0]])
-            # data2.append(title_v[0])
+            comment_val.append(comment_v[0])
+            data2.append([idd_v[0], comment_v[0]])
+            # data2.append(comment_val[0])
         
         db.close()
     print(id_val)
-    data = {"id": id_val, "title":title_val}
+    data = {"id": id_val, "title":comment_val}
     print(data)
     return data
 
