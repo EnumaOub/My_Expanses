@@ -58,7 +58,8 @@ def show_entries():
     with engine.connect() as db:
         expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
     print(expanse_tot)
-    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot)
+    kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]
+    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=kd_exp)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
