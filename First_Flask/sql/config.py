@@ -7,7 +7,7 @@ Created on Sun Feb 26 19:14:19 2023
 
 from configparser import ConfigParser
 
-def set_config(filename='config.ini', section='postgresql'):
+def set_config(filename="D:\Learn\Python\First_Flask\First_Flask\sql\config.ini", section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file

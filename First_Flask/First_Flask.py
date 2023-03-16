@@ -6,6 +6,7 @@ Created on Tue Mar  7 19:02:40 2023
 """
 
 import os
+from datetime import datetime
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -21,7 +22,8 @@ import pandas as pd
 from .sql.database import db_session, init_db, engine
 from .sql.models import Entries
 
-from datetime import datetime
+from .expanses import input_id, add_expanse, get_total, get_expanse
+
 
 
 
@@ -54,47 +56,25 @@ def initdb_command():
 @app.route('/')
 def show_entries():
     data=input_id()
-    # cur = db.execute('select title, text from entries order by id desc')
-    entries = Entries.query.all()
-    with engine.connect() as db:
-        expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
-    print(expanse_tot)
+    entries = get_expanse()
+    a=get_expanse(exp_val=entries[3],all=False)
+    print(a)
+    expanse_tot = get_total()
+
     kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]
     today_date = datetime.today().strftime("%Y-%m-%d")
-    print(today_date)
+
     return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=kd_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    print(request.form['date_exp'])
-    e = Entries(request.form['title'], request.form['comment'], request.form['expanses'], request.form['date_exp'])
-    print(e)
-    db_session.add(e)
-    db_session.commit()
-    flash('New entry was successfully posted')
+    add_expanse()
     return redirect(url_for('show_entries'))
 
-@app.route("/")
-def input_id():
-    data2=[]
-    with engine.connect() as db:
-        comment = db.execute(text("""SELECT comment FROM public.entries """))
-        idd = db.execute(text("""SELECT id FROM public.entries """))
-        id_val=[]
-        comment_val=[]
-        for (idd_v , comment_v )in zip(idd, comment):
-            id_val.append(idd_v[0])
-            comment_val.append(comment_v[0])
-            data2.append([idd_v[0], comment_v[0]])
-            # data2.append(comment_val[0])
-        
-        db.close()
-    print(id_val)
-    data = {"id": id_val, "title":comment_val}
-    print(data)
-    return data
+
+
 
 @app.route('/del',methods=['GET', 'POST'])
 def del_entry():
