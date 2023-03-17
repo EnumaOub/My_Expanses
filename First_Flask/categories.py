@@ -12,7 +12,7 @@ import psycopg2
 import pandas as pd
 
 from .sql.database import db_session, init_db, engine
-from .sql.models import Entries
+
 
 from datetime import datetime
 
