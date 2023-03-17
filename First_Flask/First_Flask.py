@@ -58,7 +58,7 @@ def show_entries():
     data=input_id()
     entries = get_expanse()
     a=get_expanse(exp_val=entries[3],all=False)
-    print(a)
+
     expanse_tot = get_total()
 
     kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]

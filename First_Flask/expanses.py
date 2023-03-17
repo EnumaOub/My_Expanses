@@ -64,7 +64,7 @@ def get_expanse(exp_val={}, all=True):
                                     title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp  """),
                                       {"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
                                         "date_exp": exp_val["date_exp"]}).fetchall()
-                print(exp_tot)
+
     return exp_tot
 
 
