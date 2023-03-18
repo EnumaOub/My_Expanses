@@ -12,7 +12,7 @@ import psycopg2
 import pandas as pd
 
 from .sql.database import db_session, init_db, engine
-from .sql.models import Entries
+from .sql.models import Entries, Categories
 
 from datetime import datetime
 
@@ -51,7 +51,9 @@ def get_expanse(exp_val={}, all=True):
     if all:
         with engine.connect() as db:
             tot = db.execute(text("SELECT title, comment, expanses, date_exp FROM public.entries")).fetchall()
+            print(tot)
             for val in tot:
+                print(val)
                 exp["title"]=val[0]
                 exp["comment"]=val[1]
                 exp["expanses"]=val[2]

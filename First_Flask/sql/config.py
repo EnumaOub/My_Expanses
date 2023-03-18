@@ -12,8 +12,7 @@ def set_config(filename="D:\Learn\Python\First_Flask\First_Flask\sql\config.ini"
     parser = ConfigParser()
     # read config file
     parser.read(filename)
-
-    # get section, default to postgresql
+    
     db = {}
     if parser.has_section(section):
         params = parser.items(section)

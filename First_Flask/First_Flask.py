@@ -20,10 +20,10 @@ import psycopg2
 import pandas as pd
 
 from .sql.database import db_session, init_db, engine
-from .sql.models import Entries
+from .sql.models import Entries, Categories
 
 from .expanses import input_id, add_expanse, get_total, get_expanse
-
+from .categories import add_categories_from_list, get_all_cat
 
 
 
@@ -62,9 +62,12 @@ def show_entries():
     expanse_tot = get_total()
 
     kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]
+    add_categories_from_list(kd_exp)
+    cat_exp = get_all_cat()
     today_date = datetime.today().strftime("%Y-%m-%d")
+    print(entries)
 
-    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=kd_exp, today_date=today_date)
+    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
