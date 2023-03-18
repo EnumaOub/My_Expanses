@@ -46,18 +46,19 @@ def input_id():
     return data
 
 def get_expanse(exp_val={}, all=True):
-    exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+    
     exp_tot =[]
     if all:
         with engine.connect() as db:
             tot = db.execute(text("SELECT title, comment, expanses, date_exp FROM public.entries")).fetchall()
-            print(tot)
+            
             for val in tot:
-                print(val)
+                exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
                 exp["title"]=val[0]
                 exp["comment"]=val[1]
                 exp["expanses"]=val[2]
                 exp["date_exp"]=val[3]
+                
                 exp_tot.append(exp)
     else:
         if bool(exp_val):

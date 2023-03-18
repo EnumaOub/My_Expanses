@@ -65,7 +65,7 @@ def show_entries():
     add_categories_from_list(kd_exp)
     cat_exp = get_all_cat()
     today_date = datetime.today().strftime("%Y-%m-%d")
-    print(entries)
+
 
     return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
 
