@@ -1,54 +1,83 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
+
+  
+
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <dl>
-        <dt>Choose an kind of expanse <SELECT name="title" class=kd_exp>
-          {% for k in kd_exp %}
-            <OPTION value="{{ k }}">{{ k }}</option>
-          {% endfor %}
-        </SELECT>
-        <dt>Value expanse:
-          <dd><input type=int size=30 name=expanses>
-        <dt>Comment:
-          <dd><textarea name=comment rows=5 cols=40></textarea>
+      <fieldset>
+        <legend>Entries Expenses</legend>
+        <div class="form-group">
+          <label for="cat" class="form-label mt-4">Choose an kind of expanse</label>
+          <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+            {% for k in kd_exp %}
+              <OPTION value="{{ k }}">{{ k }}</option>
+            {% endfor %}
+          </SELECT>
+        </div>
+        <div class="form-group">
+          <label for="expenses" class="form-label mt-4">Value expanse</label>
+          <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
+        </div>
+          <div class="form-group">
+            <label for="comment" class="form-label mt-4">Comment</label>
+            <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+          </div>
             <div class="date-input">
               <label for="today_date">Choose a start date:</label><br>
-              <input type="date" name="date_exp" value="{{ today_date }}"><br>
+              <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
           </div>
-          <dd><input type=submit value=Submit>
-      </dl>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </fieldset>
     </form>
 
   <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
-		<h3>Choose an entry</h3> <SELECT name="id_data" class=data>
-      {% set n = data.id | length %}
-      {% for k in range(n) %}
-        <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
-      {% endfor %}
-		</SELECT>
-    <dd><input type=submit value=Del>
-    </form>
+    <legend>Delete Entries</legend>
+		<div class="form-group">
+      <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
+      <SELECT class="form-select" id="del" name="id_data" class=data>
+        {% set n = data.id | length %}
+        {% for k in range(n) %}
+          <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
+        {% endfor %}
+      </SELECT>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+  </form>
 
     <div class="center">
       <div class=expanse_tot>
-        <h2>Total</h2><i>{{ expanse_tot }}</i><span>&#8364;</span>
+        <legend>Total</legend>
+        <i>{{ expanse_tot }}</i><span>&#8364;</span>
       </div>
     </div>
     
 
 {% endif %}
-  
+<table class="table table-hover">
+  <thead>
+    <tr>
+
+      <th scope="col">Categories</th>
+      <th scope="col">Value</th>
+      <th scope="col">Comment</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
   <ul class=entries>
+    <tbody>    
   {% for entry in entries %}
-    <li><h3>{{ entry.title }}</h3><i>{{ entry.expanses }}</i><span>&#8364;</span>
-      <br>{{ entry.comment|safe }}
-      <br>{{ entry.date_exp|safe }}
-    </li>
-    
-    
+    <tr class="table-primary">
+          <td>{{ entry.title }}</td>
+          <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
+          <td>{{ entry.comment|safe }}</td>
+          <td>{{ entry.date_exp|safe }}</td>
+        </tr>
+
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
+</tbody>
+</table>
   
 {% endblock %}
