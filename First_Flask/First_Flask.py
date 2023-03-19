@@ -61,9 +61,10 @@ def show_entries():
 
     expanse_tot = get_total()
 
-    kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers"]
+    kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers", "Sport", "Abonnements"]
     add_categories_from_list(kd_exp)
     cat_exp = get_all_cat()
+    print(cat_exp)
     today_date = datetime.today().strftime("%Y-%m-%d")
 
 
