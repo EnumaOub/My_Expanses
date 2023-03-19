@@ -2,82 +2,105 @@
 {% block body %}
   {% if session.logged_in %}
 
-  
-
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <fieldset>
-        <legend>Entries Expenses</legend>
+  <div class="container overflow-hidden">
+    <div class="row gy-5">
+      <div class="col-6">
+        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+          <fieldset>
+            <h2>Entries Expenses</h2>
+            <div class="form-group">
+              <label for="cat" class="form-label mt-4">Choose an kind of expanse</label>
+              <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+                {% for k in kd_exp %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+              </SELECT>
+            </div>
+            <div class="form-group">
+              <label for="expenses" class="form-label mt-4">Value expanse</label>
+              <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
+            </div>
+              <div class="form-group">
+                <label for="comment" class="form-label mt-4">Comment</label>
+                <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+              </div>
+                <div class="date-input">
+                  <label for="today_date">Choose a start date:</label><br>
+                  <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
+              </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </fieldset>
+        </form>
+      </div>
+    <div class="col-6">
+      <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
+        <h2>Delete Entries</h2>
         <div class="form-group">
-          <label for="cat" class="form-label mt-4">Choose an kind of expanse</label>
-          <SELECT class="form-select" id="cat" name="title" class=kd_exp>
-            {% for k in kd_exp %}
-              <OPTION value="{{ k }}">{{ k }}</option>
+          <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
+          <SELECT class="form-select" id="del" name="id_data" class=data>
+            {% set n = data.id | length %}
+            {% for k in range(n) %}
+              <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
             {% endfor %}
           </SELECT>
         </div>
-        <div class="form-group">
-          <label for="expenses" class="form-label mt-4">Value expanse</label>
-          <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
-        </div>
-          <div class="form-group">
-            <label for="comment" class="form-label mt-4">Comment</label>
-            <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
-          </div>
-            <div class="date-input">
-              <label for="today_date">Choose a start date:</label><br>
-              <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
-          </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </fieldset>
-    </form>
-
-  <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
-    <legend>Delete Entries</legend>
-		<div class="form-group">
-      <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
-      <SELECT class="form-select" id="del" name="id_data" class=data>
-        {% set n = data.id | length %}
-        {% for k in range(n) %}
-          <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
-        {% endfor %}
-      </SELECT>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
     </div>
-    <button type="submit" class="btn btn-danger">Delete</button>
-  </form>
 
-    <div class="center">
-      <div class=expanse_tot>
-        <legend>Total</legend>
-        <i>{{ expanse_tot }}</i><span>&#8364;</span>
-      </div>
-    </div>
-    
+
+
+ 
 
 {% endif %}
-<table class="table table-hover">
-  <thead>
-    <tr>
 
-      <th scope="col">Categories</th>
-      <th scope="col">Value</th>
-      <th scope="col">Comment</th>
-      <th scope="col">Date</th>
-    </tr>
-  </thead>
-  <ul class=entries>
-    <tbody>    
-  {% for entry in entries %}
-    <tr class="table-primary">
-          <td>{{ entry.title }}</td>
-          <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
-          <td>{{ entry.comment|safe }}</td>
-          <td>{{ entry.date_exp|safe }}</td>
-        </tr>
+    <div class="col-6">
+      <table class="table table-hover">
+        <thead>
+          <tr>
 
-  {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
-  {% endfor %}
-</tbody>
-</table>
-  
+            <th scope="col">Categories</th>
+            <th scope="col">Value</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <ul class=entries>
+          <tbody>    
+            {% for entry in entries %}
+              <tr class="table-primary">
+                    <td>{{ entry.title }}</td>
+                    <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
+                    <td>{{ entry.comment|safe }}</td>
+                    <td>{{ entry.date_exp|safe }}</td>
+                  </tr>
+
+            {% else %}
+              <li><em>Unbelievable.  No entries here so far</em>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+
+    <div class="col-6">
+      <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
+        <div class="card-header">Total</div>
+        <div class="card-body">
+          <div class=expanse_tot>
+            <p class="card-text"><strong>{{ expanse_tot }}</strong><span>&#8364;</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="text-center">
+  <a href="https://www.google.com/">
+    <button type="button" class="btn btn-primary">Primary</button>
+  </a>
+</div>
+
 {% endblock %}
