@@ -116,3 +116,7 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
+@app.route('/data')
+def show_data():
+
+    return render_template('study.html')

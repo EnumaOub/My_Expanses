@@ -2,14 +2,19 @@
 {% block body %}
   {% if session.logged_in %}
 
-  <div class="container overflow-hidden">
-    <div class="row gy-5">
-      <div class="col-6">
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#exp_res">Expenses</a></li>
+      <li><a href="#add_exp">Add expenses</a></li>
+      <li><a href="#del_exp">Delete expenses</a></li>
+    </ul>
+    <div id="add_exp">
         <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
           <fieldset>
-            <h2>Entries Expenses</h2>
+            <h2 style="color:white" >Entries Expenses</h2>
             <div class="form-group">
-              <label for="cat" class="form-label mt-4">Choose an expanse category</label>
+              <label for="cat" class="form-label mt-4" style="color:white" >Choose an expanse category</label>
               <SELECT class="form-select" id="cat" name="title" class=kd_exp>
                 {% for k in kd_exp %}
                   <OPTION value="{{ k }}">{{ k }}</option>
@@ -17,26 +22,26 @@
               </SELECT>
             </div>
             <div class="form-group">
-              <label for="expenses" class="form-label mt-4">Value expanse</label>
+              <label for="expenses" class="form-label mt-4" style="color:white" >Value expanse</label>
               <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
             </div>
               <div class="form-group">
-                <label for="comment" class="form-label mt-4">Comment</label>
+                <label for="comment" class="form-label mt-4" style="color:white" >Comment</label>
                 <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
               </div>
                 <div class="date-input">
-                  <label for="today_date">Choose a start date:</label><br>
+                  <label for="today_date" class="form-label mt-4" style="color:white" >Choose a start date:</label><br>
                   <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
               </div>
                 <button type="submit" class="btn btn-primary">Store</button>
             </fieldset>
         </form>
       </div>
-    <div class="col-6">
+    <div id="del_exp">
       <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
-        <h2>Delete Entries</h2>
+        <h2  style="color:white" >Delete Entries</h2>
         <div class="form-group">
-          <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
+          <label for="del" class="form-label mt-4" style="color:white" >Choose an Entry to delete</label>
           <SELECT class="form-select" id="del" name="id_data" class=data>
             {% set n = data.id | length %}
             {% for k in range(n) %}
@@ -47,14 +52,16 @@
         <button type="submit" class="btn btn-danger">Delete</button>
       </form>
     </div>
+    
+
+    
 
 
 
  
 
 {% endif %}
-
-    <div class="col-6">
+  <div id="exp_res">
       <table class="table table-hover">
         <thead>
           <tr>
@@ -80,10 +87,9 @@
             {% endfor %}
           </tbody>
       </table>
-    </div>
 
-    <div class="col-6">
-      <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
+
+<!--       <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
         <div class="card-header">Total</div>
         <div class="card-body">
           <div class=expanse_tot>
@@ -91,14 +97,13 @@
           </div>
         </div>
       </div>
-    </div>
-
+ -->
   </div>
-
 </div>
 
+
 <div class="text-center">
-  <a href="https://www.google.com/">
+  <a href="data">
     <button type="button" class="btn btn-primary">Primary</button>
   </a>
 </div>
