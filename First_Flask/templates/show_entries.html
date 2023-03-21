@@ -62,31 +62,13 @@
 
 {% endif %}
   <div id="exp_res">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-
-            <th scope="col">Categories</th>
-            <th scope="col">Value</th>
-            <th scope="col">Comment</th>
-            <th scope="col">Date</th>
-          </tr>
-        </thead>
-        <ul class=entries>
-          <tbody>    
-            {% for entry in entries %}
-              <tr class="table-primary">
-                    <td>{{ entry.title }}</td>
-                    <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
-                    <td>{{ entry.comment|safe }}</td>
-                    <td>{{ entry.date_exp|safe }}</td>
-                  </tr>
-
-            {% else %}
-              <li><em>Unbelievable.  No entries here so far</em>
-            {% endfor %}
-          </tbody>
-      </table>
+    <div id='chart' class='chart'”></div>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graphs = {{graphJSON | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
+        
 
 
 <!--       <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
@@ -108,4 +90,6 @@
   </a>
 </div>
 
+
 {% endblock %}
+

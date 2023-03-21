@@ -2,12 +2,15 @@ import os
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
-     
+
+import json
 from sqlalchemy import create_engine, delete
 from sqlalchemy import text
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import psycopg2 
+import plotly.express as px
+import plotly
 
 import pandas as pd
 
@@ -77,8 +80,19 @@ def get_total():
     return expanse_tot
 
 
+def plot_exp():
+    with engine.connect() as db:
+        data       = pd.read_sql(text("select * from public.entries"), db);
 
+    keys = data.columns
+    fig_exp_date = px.bar(x=data[keys[-1]], y=data["expanses"], color =data["title"], text_auto=True)
+    fig_exp_type = px.bar(x=data["title"], y=data["expanses"], color =data[keys[-1]], text_auto=True)
+    fig_exp_type.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)')
 
+    graphJSON = json.dumps(fig_exp_type, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return graphJSON
 
 
 

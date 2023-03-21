@@ -18,8 +18,36 @@
 
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 
+     
+    </style>
+
   <body>
-    <div class=page>
-      <h1>Data</h1>
-    </div>
+    <h1>DATA</h1>
+    <table class="table table-hover">
+        <thead>
+          <tr>
+
+            <th scope="col">Categories</th>
+            <th scope="col">Value</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <ul class=entries>
+          <tbody>    
+            {% for entry in entries %}
+              <tr class="table-primary">
+                    <td>{{ entry.title }}</td>
+                    <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
+                    <td>{{ entry.comment|safe }}</td>
+                    <td>{{ entry.date_exp|safe }}</td>
+                  </tr>
+
+            {% else %}
+              <li><em>Unbelievable.  No entries here so far</em>
+            {% endfor %}
+          </tbody>
+      </table>
+
 </body>
+

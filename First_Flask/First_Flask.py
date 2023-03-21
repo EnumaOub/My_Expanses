@@ -7,6 +7,7 @@ Created on Tue Mar  7 19:02:40 2023
 
 import os
 from datetime import datetime
+import plotly.express as px
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -22,7 +23,7 @@ import pandas as pd
 from .sql.database import db_session, init_db, engine
 from .sql.models import Entries, Categories
 
-from .expanses import input_id, add_expanse, get_total, get_expanse
+from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
 from .categories import add_categories_from_list, get_all_cat
 
 
@@ -52,7 +53,7 @@ def initdb_command():
     init_db()
     print('Initialized the database.')
     
-    
+
 @app.route('/')
 def show_entries():
     data=input_id()
@@ -67,8 +68,11 @@ def show_entries():
     print(cat_exp)
     today_date = datetime.today().strftime("%Y-%m-%d")
 
+    graphJSON=plot_exp()
+    print(graphJSON)
 
-    return render_template('show_entries.html', entries=entries, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
+
+    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -118,5 +122,6 @@ def logout():
 
 @app.route('/data')
 def show_data():
+    entries = get_expanse()
 
-    return render_template('study.html')
+    return render_template('study.html', entries=entries)
