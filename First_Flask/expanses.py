@@ -11,6 +11,8 @@ from sqlalchemy.ext.declarative import declarative_base
 import psycopg2 
 import plotly.express as px
 import plotly
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 import pandas as pd
 
@@ -84,13 +86,49 @@ def plot_exp():
     with engine.connect() as db:
         data       = pd.read_sql(text("select * from public.entries"), db);
 
-    keys = data.columns
-    fig_exp_date = px.bar(x=data[keys[-1]], y=data["expanses"], color =data["title"], text_auto=True)
-    fig_exp_type = px.bar(x=data["title"], y=data["expanses"], color =data[keys[-1]], text_auto=True)
-    fig_exp_type.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)')
 
-    graphJSON = json.dumps(fig_exp_type, cls=plotly.utils.PlotlyJSONEncoder)
+
+    keys = data.columns
+
+    data.sort_values(by=keys[-1], inplace = True)
+
+    figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
+
+    # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
+    # This is essentially breaking down the Express fig into it's traces
+    figure1_traces = []
+    
+    for trace in range(len(figure1["data"])):
+        figure1_traces.append(figure1["data"][trace])
+
+    fig = make_subplots(1, 2,
+                    subplot_titles=['Time', 'Categories'])
+    for traces in figure1_traces:
+        fig.append_trace(traces, row=1, col=2)
+
+    
+    fig.add_trace(go.Scatter(x=data[keys[-1]], y=data["expanses"], showlegend=False),
+                  1,1)
+    
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(margin=dict(t=35, b=10, l=0, r=0), title_font_color='White',
+    legend=dict(
+        font=dict(
+            size=18,
+            color="white"
+        ),
+        title_text='Global Expanses'    )
+)
+    fig.update_layout(font=dict(
+            size=12,  # Set the font size here
+            color="white"
+    ))
+
+    for i in fig['layout']['annotations']:
+        i['font'] = dict(size=20,color='white')
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     
     return graphJSON
 

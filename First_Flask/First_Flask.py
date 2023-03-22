@@ -69,7 +69,7 @@ def show_entries():
     today_date = datetime.today().strftime("%Y-%m-%d")
 
     graphJSON=plot_exp()
-    print(graphJSON)
+
 
 
     return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
