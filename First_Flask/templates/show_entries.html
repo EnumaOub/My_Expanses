@@ -62,6 +62,18 @@
 
 {% endif %}
   <div id="exp_res">
+    <div class="mx-auto" style="width: 200px;">
+          <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
+        <div class="card-header">Total</div>
+        <div class="card-body">
+          <div class=expanse_tot>
+            <p class="card-text"><strong>{{ expanse_tot }}</strong><span>&#8364;</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div id='chart' class='chart'”></div>
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script type='text/javascript'>
@@ -71,22 +83,14 @@
         
 
 
-<!--       <div class="card text-white bg-danger mb-3" style="max-width: 6rem;">
-        <div class="card-header">Total</div>
-        <div class="card-body">
-          <div class=expanse_tot>
-            <p class="card-text"><strong>{{ expanse_tot }}</strong><span>&#8364;</span></p>
-          </div>
-        </div>
-      </div>
- -->
+
   </div>
 </div>
 
 
 <div class="text-center">
-  <a href="data">
-    <button type="button" class="btn btn-primary">Data Table</button>
+  <a href="../">
+    <button type="button" class="btn btn-primary">Retour</button>
   </a>
 </div>
 

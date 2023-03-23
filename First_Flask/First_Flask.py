@@ -65,12 +65,12 @@ def show_entries():
     kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers", "Sport", "Abonnements"]
     add_categories_from_list(kd_exp)
     cat_exp = get_all_cat()
-    print(cat_exp)
+
     today_date = datetime.today().strftime("%Y-%m-%d")
 
     graphJSON=plot_exp()
 
-
+    print(entries)
 
     return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
 
@@ -98,6 +98,20 @@ def del_entry():
     
     return redirect(url_for('show_entries'))
 
+@app.route('/del_row/<id_val>')
+def del_row(id_val=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("DELETE ROW")
+    select = id_val
+    print(select)
+    
+    Entries.query.filter_by(id=int(select)).delete()
+    db_session.commit()
+    
+    return redirect(url_for('show_data'))
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -123,5 +137,5 @@ def logout():
 @app.route('/data')
 def show_data():
     entries = get_expanse()
-
+    print(entries)
     return render_template('study.html', entries=entries)

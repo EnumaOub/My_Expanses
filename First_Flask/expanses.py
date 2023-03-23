@@ -55,22 +55,23 @@ def get_expanse(exp_val={}, all=True):
     exp_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("SELECT title, comment, expanses, date_exp FROM public.entries")).fetchall()
-            
+            tot = db.execute(text("SELECT id, title, comment, expanses, date_exp FROM public.entries")).fetchall()
+
             for val in tot:
-                exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-                exp["title"]=val[0]
-                exp["comment"]=val[1]
-                exp["expanses"]=val[2]
-                exp["date_exp"]=val[3]
+                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
+                exp["id"] = val[0]
+                exp["title"]=val[1]
+                exp["comment"]=val[2]
+                exp["expanses"]=val[3]
+                exp["date_exp"]=val[4]
                 
                 exp_tot.append(exp)
     else:
         if bool(exp_val):
             with engine.connect() as db:
-                exp_tot = db.execute(text("""SELECT * FROM public.entries WHERE 
+                exp_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
                                     title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp  """),
-                                      {"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
+                                      {"id": exp_val["id"],"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
                                         "date_exp": exp_val["date_exp"]}).fetchall()
 
     return exp_tot
@@ -84,13 +85,16 @@ def get_total():
 
 def plot_exp():
     with engine.connect() as db:
-        data       = pd.read_sql(text("select * from public.entries"), db);
+        data       = pd.read_sql(text("select * from public.entries"), db)
+        data_exp       = pd.read_sql(text(""" SELECT SUM(expanses) AS expanses, "date_exp"
+                                            FROM public.entries GROUP BY "date_exp" """), db);
 
 
 
     keys = data.columns
 
     data.sort_values(by=keys[-1], inplace = True)
+    data_exp.sort_values(by=keys[-1], inplace = True)
 
     figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
 
@@ -107,7 +111,7 @@ def plot_exp():
         fig.append_trace(traces, row=1, col=2)
 
     
-    fig.add_trace(go.Scatter(x=data[keys[-1]], y=data["expanses"], showlegend=False),
+    fig.add_trace(go.Scatter(x=data_exp[keys[-1]], y=data_exp["expanses"], showlegend=False),
                   1,1)
     
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
