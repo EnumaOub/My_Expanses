@@ -65,7 +65,17 @@
     
       <div id="read_csv">
         <h1>Read CSV</h1>
-
+        <form action="" method="POST" enctype="multipart/form-data" class=add-path>
+          <p><input type="file" name="file"></p>
+          <p><input type="submit" value="Submit"></p>
+        </form>
+        {% if show_table %}
+        {% for table in file_table %}
+            {{ table|safe }}
+        {% endfor %}
+        
+        
+        {% endif %}
       </div>
 
       <div id="budget">

@@ -10,7 +10,7 @@ from datetime import datetime
 import plotly.express as px
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
+     render_template, flash, send_from_directory
      
 from sqlalchemy import create_engine, delete
 from sqlalchemy import text
@@ -25,11 +25,15 @@ from .sql.models import Entries, Categories
 
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
 from .categories import add_categories_from_list, get_all_cat
+from .read_file import read_csv, html_style
+from werkzeug.utils import secure_filename
 
-
+UPLOAD_FOLDER = r"D:\Learn\Python\backup_android_budget\new"
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'csv'}
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , flaskr.py
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -134,8 +138,48 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
-@app.route('/data')
+@app.route('/uploads/<name>')
+def download_file(name):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/data', methods=['GET', 'POST'])
 def show_data():
+    print("SHOW DATA")
+    print(request.method)
+    
+    file_table=None
+    titles=None
+    try:
+        file = request.files['file']
+        if file.filename != '':
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            # set the file path
+            file.save(file_path)
+            pd.set_option('display.width', 1000)
+            pd.set_option('colheader_justify', 'center')
+            file_table=read_csv(file_path)
+            show_table = True
+            print(file_table)
+            print(file_table.to_html(classes='data'))
+            titles=file_table.columns.values
+            #file_table.style.set_properties(**{'color': 'white'})
+            file_table=[html_style(file_table.to_html(classes='data', header="true"))]
+            
+    except:
+        show_table = False
     entries = get_expanse()
-    print(entries)
-    return render_template('study.html', entries=entries)
+    #print(entries)
+    return render_template('study.html', entries=entries, show_table=show_table, file_table=file_table)
+
+
+@app.route('/file_add', methods=['POST'])
+def get_path():
+    if not session.get('logged_in'):
+        abort(401)
+    
+    df=read_csv()
+    return render_template('study.html', show_table=1, file_table=df)
