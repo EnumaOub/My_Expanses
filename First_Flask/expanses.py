@@ -31,6 +31,17 @@ def add_expanse():
     db_session.add(e)
     db_session.commit()
 
+def add_expanse_db(df):
+    exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+    keys = sql_df.columns
+    for index, row in df.iterrows():
+        exp["title"] = row['title']
+        exp["comment"] = row['comment']
+        exp["expanses"] = row['expanses']
+        exp["date_exp"] = row[keys[-1]]
+        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+        db_session.add(e)
+        db_session.commit()
 
 def input_id():
     data2=[]

@@ -41,16 +41,25 @@ def convert2db(df):
     except:
         res_df["expanses"]=res_df["expanses"].str.replace(',', '.').astype('float')
     res_df["date_exp"]=df["Date"] 
+    res_df=res_df.rename_axis('id')
     return res_df
 
 def send2db(df):
+    print("send2db")
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
     with engine.connect() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
         keys = sql_df.columns
-        df_fin = pd.concat((df, sql_df)).drop_duplicates(subset=['title', 'comment', 'expanses', keys[-1]], keep=False)
-        print(df_fin)
-        df_fin.to_sql('entries', con=db, if_exists='append', index=False)
+        #df_fin = pd.concat((df, sql_df))
+        #print(df_fin)
+        #df_fin = df_fin.drop_duplicates(subset=['comment','expanses'], keep=False, inplace=False)
+        #df_fin = df_fin.rename_axis('id')
+        #df2=pd.merge(df,sql_df, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
+        df=df[(~df.comment.isin(sql_df.comment)) & (~df.expanses.isin(sql_df.expanses)) & (~df.date_exp.isin(sql_df.date_exp))]
+
+        print(df)
+
+        df.to_sql('entries', con=db, if_exists='append', index=False)
 
 if __name__ == "__main__":
     path = r"D:\Learn\Python\backup_android_budget\Compte Courant-20230324-182003.csv"
