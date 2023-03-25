@@ -92,9 +92,9 @@ def plot_exp():
 
 
     keys = data.columns
-
-    data.sort_values(by=keys[-1], inplace = True)
-    data_exp.sort_values(by=keys[-1], inplace = True)
+    print(keys)
+    data.sort_values(by="""date_exp""", inplace = True)
+    data_exp.sort_values(by="""date_exp""", inplace = True)
 
     figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
 
@@ -111,7 +111,7 @@ def plot_exp():
         fig.append_trace(traces, row=1, col=2)
 
     
-    fig.add_trace(go.Scatter(x=data_exp[keys[-1]], y=data_exp["expanses"], showlegend=False),
+    fig.add_trace(go.Scatter(x=data_exp["""date_exp"""], y=data_exp["expanses"], showlegend=False),
                   1,1)
     
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',

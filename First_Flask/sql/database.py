@@ -8,7 +8,10 @@ Created on Wed Mar  8 20:13:18 2023
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from .config import set_config
+try:
+    from .config import set_config
+except:
+    from config import set_config
 
 params = set_config()
 engine = create_engine(f'postgresql://{params["user"]}:{params["password"]}@{params["host"]}/{params["database"]}',
