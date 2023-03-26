@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import csv
 from sqlalchemy import text
+
 try:
     from .sql.database import db_session, init_db, engine
 except:
@@ -49,16 +50,7 @@ def send2db(df):
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
     with engine.connect() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
-        keys = sql_df.columns
-        #df_fin = pd.concat((df, sql_df))
-        #print(df_fin)
-        #df_fin = df_fin.drop_duplicates(subset=['comment','expanses'], keep=False, inplace=False)
-        #df_fin = df_fin.rename_axis('id')
-        #df2=pd.merge(df,sql_df, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
-        df=df[(~df.comment.isin(sql_df.comment)) & (~df.expanses.isin(sql_df.expanses)) & (~df.date_exp.isin(sql_df.date_exp))]
-
-        print(df)
-
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
 if __name__ == "__main__":

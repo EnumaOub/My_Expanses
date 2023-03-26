@@ -11,8 +11,14 @@ import psycopg2
 
 import pandas as pd
 
-from .sql.database import db_session, init_db, engine
-from .sql.models import Entries, Categories
+try:
+    from .sql.database import db_session, init_db, engine
+    from .sql.models import Entries, Categories
+except:
+    import sys
+    sys.path.insert(0, r"""D:\Learn\Python\repos\First_Flask\First_Flask\sql""")
+    from database import db_session, init_db, engine
+    from models import Entries, Categories
 
 from datetime import datetime
 
@@ -21,7 +27,6 @@ def del_duplicate():
         db_session.query(Categories.name, func.min(Categories.id).label("min_id"))
         .group_by(Categories.name)
     ) .subquery('date_min_id')
-        
     sq = (
         db_session
         .query(Categories.id)
@@ -30,7 +35,6 @@ def del_duplicate():
             Categories.id != subq.c.min_id)
         )
     ).subquery("subq")
-
     dq = (
         db_session
         .query(Categories)
@@ -38,6 +42,16 @@ def del_duplicate():
     ).delete(synchronize_session=False)
     db_session.commit()
 
+def update_cat():
+    sql1 = text("""SELECT title FROM entries""")
+    sql2 = text("""SELECT name FROM categories""")
+    with engine.connect() as db:
+        df_entries = pd.read_sql(sql=sql1, con=db)
+        df_cat = pd.read_sql(sql=sql2, con=db)
+        df_entries=df_entries.drop_duplicates().dropna()
+        df_entries=df_entries[(~df_entries.title.isin(df_cat.name))]
+        df_entries.rename(columns={"title": "name"}, inplace=True)
+        df_entries.to_sql('categories', con=db, if_exists='append', index=False)
 
 def add_categories_from_list(lst_cat):
     categ = {"name": None}
@@ -69,7 +83,20 @@ def get_all_cat():
     return cat_tot
    
 
-
+if __name__ == "__main__":
+    lst_cat=[]
+    sql1 = text("""SELECT title FROM entries""")
+    sql2 = text("""SELECT name FROM categories""")
+    with engine.connect() as db:
+        df_entries = pd.read_sql(sql=sql1, con=db)
+        df_cat = pd.read_sql(sql=sql2, con=db)
+        df_entries=df_entries.drop_duplicates().dropna()
+        print(df_cat)
+        print(df_entries)
+        df_entries=df_entries[(~df_entries.title.isin(df_cat.name))]
+        df_entries.rename(columns={"title": "name"}, inplace=True)
+        print(df_entries)
+        df_entries.to_sql('categories', con=db, if_exists='append', index=False)
 
 
 

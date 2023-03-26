@@ -24,7 +24,7 @@ from .sql.database import db_session, init_db, engine
 from .sql.models import Entries, Categories
 
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
-from .categories import add_categories_from_list, get_all_cat
+from .categories import add_categories_from_list, get_all_cat, update_cat
 from .read_file import read_csv, html_style
 from werkzeug.utils import secure_filename
 
@@ -65,9 +65,9 @@ def show_entries():
     a=get_expanse(exp_val=entries[3],all=False)
 
     expanse_tot = get_total()
-
-    kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers", "Sport", "Abonnements"]
-    add_categories_from_list(kd_exp)
+    update_cat()
+    #kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers", "Sport", "Abonnements"]
+    #add_categories_from_list(kd_exp)
     cat_exp = get_all_cat()
 
     today_date = datetime.today().strftime("%Y-%m-%d")

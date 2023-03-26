@@ -66,7 +66,7 @@ def get_expanse(exp_val={}, all=True):
     exp_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("SELECT id, title, comment, expanses, date_exp FROM public.entries")).fetchall()
+            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries""")).fetchall()
 
             for val in tot:
                 exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
