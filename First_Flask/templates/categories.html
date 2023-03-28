@@ -21,15 +21,27 @@
      
     </style>
 
-  <body>
-
+<body>
+    <h1>Categories</h1>
+    <div id="tabs">
+        <ul>
+          <li><a href="#add">Add Category</a></li>
+          <li><a href="#del">Delete Category</a></li>
+        </ul>
+    <div id="add">
+        <form action="{{ url_for('add_cat') }}" method=post class=add-cat>
+            <div class="form-group">
+                <label for="cat" class="form-label mt-4" style="color:white" >Category name</label>
+                <input type=int class="form-control" id="cat" name=cat placeholder="expenses">
+            </div>
+            <button type="submit" class="btn btn-primary">Store</button>
+        </form>
+    </div>
+    <div id="del">
         <table class="table table-hover">
             <thead>
               <tr>
                 <th scope="col">Categories</th>
-                <th scope="col">Value</th>
-                <th scope="col">Comment</th>
-                <th scope="col">Date</th>
                 <th scope="col">Delete</th>
               </tr>
             </thead>
@@ -37,13 +49,10 @@
               <tbody>    
                 {% for entry in entries %}
                   <tr class="table-primary">
-                        <td>{{ entry.title }}</td>
-                        <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
-                        <td>{{ entry.comment|safe }}</td>
-                        <td>{{ entry.date_exp|safe }}</td>
+                        <td>{{ entry.name }}</td>
                       <td>
-                          <a href="{{ url_for('del_row', id_val=entry.id) }}"
-                        onclick="return confirm('Do you want to permanently the row {{ entry.comment }}?');">
+                          <a href="{{ url_for('del_cat', id_val=entry.id) }}"
+                        onclick="return confirm('Do you want to permanently the row {{ entry.name }}?');">
                         <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                         </button></a>
                       </td>
@@ -54,13 +63,11 @@
               </tbody>
             </ul>
           </table>
-
-
-      <div class="text-center">
+    </div>
+    <div class="text-center">
         <a href="../">
           <button type="button" class="btn btn-primary">Main</button>
         </a>
       </div>
 
 </body>
-

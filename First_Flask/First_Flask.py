@@ -66,20 +66,17 @@ def show_entries():
 
     expanse_tot = get_total()
     update_cat()
-    #kd_exp=["Alimentation","Loyer","Epargne", "Loisirs","Vacances", "Divers", "Sport", "Abonnements"]
-    #add_categories_from_list(kd_exp)
     cat_exp = get_all_cat()
 
     today_date = datetime.today().strftime("%Y-%m-%d")
 
     graphJSON=plot_exp()
 
-    print(entries)
-
     return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
+    print("ADD ENTRY")
     if not session.get('logged_in'):
         abort(401)
     add_expanse()
@@ -149,31 +146,10 @@ def allowed_file(filename):
 @app.route('/data', methods=['GET', 'POST'])
 def show_data():
     print("SHOW DATA")
-    print(request.method)
-    
-    file_table=None
-    titles=None
-    try:
-        file = request.files['file']
-        if file.filename != '':
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            # set the file path
-            file.save(file_path)
-            pd.set_option('display.width', 1000)
-            pd.set_option('colheader_justify', 'center')
-            file_table=read_csv(file_path)
-            show_table = True
-            print(file_table)
-            print(file_table.to_html(classes='data'))
-            titles=file_table.columns.values
-            #file_table.style.set_properties(**{'color': 'white'})
-            file_table=[html_style(file_table.to_html(classes='data', header="true"))]
-            
-    except:
-        show_table = False
+
     entries = get_expanse()
     #print(entries)
-    return render_template('study.html', entries=entries, show_table=show_table, file_table=file_table)
+    return render_template('study.html', entries=entries)
 
 
 @app.route('/file_add', methods=['POST'])
@@ -182,4 +158,69 @@ def get_path():
         abort(401)
     
     df=read_csv()
-    return render_template('study.html', show_table=1, file_table=df)
+    return render_template('file_read.html', show_table=1, file_table=df)
+
+@app.route('/file_read', methods=['GET', 'POST'])
+def get_file():
+    print("FILE READ")
+    print(request.method)
+    
+    file_table=None
+    titles=None
+    try:
+        file = request.files['file']
+        if file.filename != '':
+
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
+            pd.set_option('display.width', 1000)
+            pd.set_option('colheader_justify', 'center')
+
+            file_table=read_csv(file_path)
+            show_table = True
+
+            file_table=[html_style(file_table.to_html(classes='data', header="true"))]
+            
+    except:
+        show_table = False
+
+    return render_template('file_read.html', show_table=show_table, file_table=file_table)
+
+@app.route('/budget', methods=['GET', 'POST'])
+def show_budget():
+    print("Budget")
+    
+
+    return render_template('budget.html')
+
+@app.route('/del_cat/<id_val>')
+def del_cat(id_val=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("DELETE CATEGORY")
+    select = id_val
+    print(select)
+    
+    Categories.query.filter_by(id=int(select)).delete()
+    db_session.commit()
+    
+    return redirect(url_for('show_cat'))
+
+@app.route('/add_cat', methods=['POST'])
+def add_cat():
+    print("ADD CATEGORY")
+    if not session.get('logged_in'):
+        abort(401)
+    categ =  request.form['cat']
+    print(categ)
+    add_categories_from_list([categ])
+    return redirect(url_for('show_cat'))
+
+@app.route('/categories', methods=['GET', 'POST'])
+def show_cat():
+    print("Categories")
+    
+    entries = get_all_cat(lst=False)
+    print(entries)
+    return render_template('categories.html', entries=entries)

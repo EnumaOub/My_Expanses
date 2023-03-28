@@ -70,17 +70,22 @@ def add_categories_from_list(lst_cat):
     
     
 
-def get_all_cat():
-    categ = {"name": None}
-    cat_tot =[]
-
-    with engine.connect() as db:
-        tot = db.execute(text("SELECT name FROM public.categories")).fetchall()
-        for val in tot:
-            categ["name"]=val[0]
-            cat_tot.append(val[0])
+def get_all_cat(lst = True):
     
-    return cat_tot
+    cat_tot = []
+    cat_comp = []
+    with engine.connect() as db:
+        tot = db.execute(text("SELECT id, name FROM public.categories")).fetchall()
+        for val in tot:
+            categ = {"id": None, "name": None}
+            categ["id"]=val[0]
+            categ["name"]=val[1]
+            cat_comp.append(categ)
+            cat_tot.append(val[0])
+    if lst:
+        return cat_tot
+    else:
+        return cat_comp
    
 
 if __name__ == "__main__":

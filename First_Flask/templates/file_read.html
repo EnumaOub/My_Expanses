@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en-US">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My Budget App</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script>
+    $( function() {
+      $( "#tabs" ).tabs();
+    } );
+    </script>
+  </head>
+
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </style>
+
+
+<body>
+    <h1>Read CSV</h1>
+        <form action="" method="POST" enctype="multipart/form-data" class=add-path>
+          <p><input type="file" name="file"></p>
+          <p><input type="submit" value="Submit"></p>
+        </form>
+        {% if show_table %}
+        {% for table in file_table %}
+            {{ table|safe }}
+        {% endfor %}
+        
+        
+        {% endif %}
+      </div>
+
+      <div class="text-center">
+        <a href="../">
+          <button type="button" class="btn btn-primary">Main</button>
+        </a>
+      </div>
+
+</body>
+
+
+
+
