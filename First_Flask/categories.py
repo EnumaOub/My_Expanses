@@ -81,7 +81,7 @@ def get_all_cat(lst = True):
             categ["id"]=val[0]
             categ["name"]=val[1]
             cat_comp.append(categ)
-            cat_tot.append(val[0])
+            cat_tot.append(val[1])
     if lst:
         return cat_tot
     else:

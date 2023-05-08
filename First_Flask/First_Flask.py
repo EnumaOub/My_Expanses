@@ -72,7 +72,7 @@ def show_entries():
 
     graphJSON=plot_exp()
 
-    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=expanse_tot, kd_exp=cat_exp, today_date=today_date)
+    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=round(expanse_tot,2), kd_exp=cat_exp, today_date=today_date)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
