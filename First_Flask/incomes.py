@@ -21,25 +21,30 @@ from .sql.models import Entries, Categories
 
 from datetime import datetime
 
-def add_expanse():
-    exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-    exp["title"] = request.form['title']
-    exp["comment"] = request.form['comment']
-    exp["expanses"] = request.form['expanses']
-    exp["date_exp"] = request.form['date_exp']
-    e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+def add_income():
+    inc = {"title": None, "comment": None, "income": None, "date_exp": None}
+    print(inc)
+    inc["title"] = request.form['title']
+    inc["comment"] = request.form['comment']
+    inc["income"] = request.form['expanses']
+    print(inc)
+    inc["date_exp"] = request.form['date_exp']
+    print(inc)
+    e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
+    print(e)
+    
     db_session.add(e)
     db_session.commit()
 
-def add_expanse_db(df):
-    exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+def add_income_db(df):
+    inc = {"title": None, "comment": None, "income": None, "date_exp": None}
     keys = sql_df.columns
     for index, row in df.iterrows():
-        exp["title"] = row['title']
-        exp["comment"] = row['comment']
-        exp["expanses"] = row['expanses']
-        exp["date_exp"] = row[keys[-1]]
-        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+        inc["title"] = row['title']
+        inc["comment"] = row['comment']
+        inc["income"] = row['income']
+        inc["date_exp"] = row[keys[-1]]
+        e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
         db_session.add(e)
         db_session.commit()
 
@@ -61,46 +66,45 @@ def input_id():
 
     return data
 
-def get_expanse(exp_val={}, all=True):
+def get_income(inc_val={}, all=True):
     
-    exp_tot =[]
+    inc_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
-            WHERE expanses is not null""")).fetchall()
+            tot = db.execute(text("""SELECT id, title, comment, income, "date_exp" FROM public.entries 
+            WHERE income is not null""")).fetchall()
 
             for val in tot:
-                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
-                exp["id"] = val[0]
-                exp["title"]=val[1]
-                exp["comment"]=val[2]
-                exp["expanses"]=val[3]
-                exp["date_exp"]=val[4]
+                inc = {"id": None,"title": None, "comment": None, "income": None, "date_exp": None}
+                inc["id"] = val[0]
+                inc["title"]=val[1]
+                inc["comment"]=val[2]
+                inc["income"]=val[3]
+                inc["date_exp"]=val[4]
                 
-                exp_tot.append(exp)
+                inc_tot.append(inc)
     else:
-        if bool(exp_val):
+        if bool(inc_val):
             with engine.connect() as db:
-                exp_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
-                                    title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp 
-                                    AND expanses is not null"""),
-                                      {"id": exp_val["id"],"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
-                                        "date_exp": exp_val["date_exp"]}).fetchall()
+                inc_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
+                                    title = :title AND comment = :comment AND income = :income AND date_exp = :date_exp AND income is not null"""),
+                                      {"id": inc_val["id"],"title": inc_val["title"], "comment": inc_val["comment"], "income": inc_val["income"],
+                                        "date_exp": inc_val["date_exp"]}).fetchall()
 
-    return exp_tot
+    return inc_tot
 
 
 def get_total():
     with engine.connect() as db:
-        expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
+        expanse_tot = db.execute(text("""SELECT SUM(income) FROM public.entries """)).first()[0]
     return expanse_tot
 
 
-def plot_exp():
+def plot_inc():
     with engine.connect() as db:
         data       = pd.read_sql(text("select * from public.entries"), db)
-        data_exp       = pd.read_sql(text(""" SELECT SUM(expanses) AS expanses, "date_exp"
-                                            FROM public.entries WHERE expanses is not null
+        data_exp       = pd.read_sql(text(""" SELECT SUM(income) AS income, "date_exp"
+                                            FROM public.entries WHERE income is not null
                                               GROUP BY "date_exp" """), db);
 
 
@@ -110,7 +114,7 @@ def plot_exp():
     data.sort_values(by="""date_exp""", inplace = True)
     data_exp.sort_values(by="""date_exp""", inplace = True)
 
-    figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
+    figure1 = px.bar(y=data["income"], x=data["title"], color=data["title"])
 
     # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
     # This is essentially breaking down the Express fig into it's traces
@@ -125,7 +129,7 @@ def plot_exp():
         fig.append_trace(traces, row=1, col=2)
 
     
-    fig.add_trace(go.Scatter(x=data_exp["""date_exp"""], y=data_exp["expanses"], showlegend=False),
+    fig.add_trace(go.Scatter(x=data_exp["""date_exp"""], y=data_exp["income"], showlegend=False),
                   1,1)
     
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
@@ -136,7 +140,7 @@ def plot_exp():
             size=18,
             color="white"
         ),
-        title_text='Global Expanses'    )
+        title_text='Global Income'    )
 )
     fig.update_layout(font=dict(
             size=12,  # Set the font size here

@@ -24,6 +24,7 @@ from .sql.database import db_session, init_db, engine
 from .sql.models import Entries, Categories
 
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
+from .incomes import get_income, plot_inc, add_income
 from .categories import add_categories_from_list, get_all_cat, update_cat
 from .read_file import read_csv, html_style
 from werkzeug.utils import secure_filename
@@ -77,9 +78,21 @@ def show_entries():
 @app.route('/add', methods=['POST'])
 def add_entry():
     print("ADD ENTRY")
+    try:
+        if request.form['inc_exp'] == 'on':
+            inc_exp = True
+    except:
+        inc_exp = False
+    print(inc_exp)
+
     if not session.get('logged_in'):
         abort(401)
-    add_expanse()
+    if inc_exp:
+        print("EXPANSES")
+        add_expanse()
+    else:
+        print("INCOMES")
+        add_income()
     return redirect(url_for('show_entries'))
 
 
@@ -87,10 +100,10 @@ def add_entry():
 
 @app.route('/del',methods=['GET', 'POST'])
 def del_entry():
+    print("DELETE")
     if not session.get('logged_in'):
         abort(401)
     
-    print("DELETE")
     select = request.form['id_data']
     print(select)
     
@@ -148,8 +161,10 @@ def show_data():
     print("SHOW DATA")
 
     entries = get_expanse()
+    incomes = get_income()
+    #print(incomes)
     #print(entries)
-    return render_template('study.html', entries=entries)
+    return render_template('study.html', entries=entries, incomes=incomes)
 
 
 @app.route('/file_add', methods=['POST'])

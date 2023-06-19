@@ -19,17 +19,18 @@ class Entries(Base):
     comment = Column(String(120), unique=True)
     expanses = Column(DOUBLE_PRECISION, unique=True)
     date_exp = Column(Date, unique=True)
-    incomes = Column(DOUBLE_PRECISION, unique=True)
+    income = Column(DOUBLE_PRECISION, unique=True)
     result = Column(DOUBLE_PRECISION, unique=True)
 
 
-    def __init__(self, title=None, comment=None, expanses=None, date_exp=None, incomes=None, result=None):
+    def __init__(self, title=None, comment=None, expanses=None, date_exp=None, income=None, result=None):
         self.title = title
         self.comment = comment
         self.expanses = expanses
         self.date_exp = date_exp
-        self.incomes = incomes
+        self.income = income
         self.result = result
+        print(income)
 
     def __repr__(self):
         return '<Title %r>' % (self.title)
