@@ -25,13 +25,24 @@
         <form action="" method="POST" enctype="multipart/form-data" class=add-path>
           <p><input type="file" name="file"></p>
           <p><input type="submit" value="Submit"></p>
+          <h2>Send to Database</h2>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Depense" id="check_exp" name="check_exp">
+            <label class="form-check-label" for="check_exp">
+              Depense
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Revenu" id="check_inc" name="check_inc">
+            <label class="form-check-label" for="check_inc">
+              Revenu
+            </label>
+          </div>
         </form>
         {% if show_table %}
         {% for table in file_table %}
             {{ table|safe }}
         {% endfor %}
-        
-        
         {% endif %}
       </div>
 

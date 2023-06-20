@@ -7,6 +7,7 @@ Created on Tue Mar  7 19:02:40 2023
 
 import os
 from datetime import datetime
+import calendar
 import plotly.express as px
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
@@ -26,7 +27,7 @@ from .sql.models import Entries, Categories
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
 from .incomes import get_income, plot_inc, add_income
 from .categories import add_categories_from_list, get_all_cat, update_cat
-from .read_file import read_csv, html_style
+from .read_file import read_csv, html_style, income2db, expanse2db, send_inc, send_exp, send_inc2
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = r"D:\Learn\Python\backup_android_budget\new"
@@ -65,15 +66,17 @@ def show_entries():
     entries = get_expanse()
     a=get_expanse(exp_val=entries[3],all=False)
 
+    today_date = datetime.today().strftime("%Y-%m-%d")
+    num = datetime.today().month
+    month=calendar.month_abbr[num]
+
     expanse_tot = get_total()
     update_cat()
     cat_exp = get_all_cat()
+    
+    graphJSON=plot_exp(month=month)
 
-    today_date = datetime.today().strftime("%Y-%m-%d")
-
-    graphJSON=plot_exp()
-
-    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=round(expanse_tot,2), kd_exp=cat_exp, today_date=today_date)
+    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=round(expanse_tot,2), kd_exp=cat_exp, today_date=today_date, month=month)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -184,6 +187,7 @@ def get_file():
     titles=None
     try:
         file = request.files['file']
+        show_table = True
         if file.filename != '':
 
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
@@ -192,12 +196,23 @@ def get_file():
             pd.set_option('colheader_justify', 'center')
 
             file_table=read_csv(file_path)
-            show_table = True
-
+            df = file_table
             file_table=[html_style(file_table.to_html(classes='data', header="true"))]
             
     except:
         show_table = False
+
+    try:
+        if request.form.get('check_exp') == 'Depense':
+            exp_df = expanse2db(df)
+            send_exp(exp_df, engine)
+        if  request.form.get('check_inc') == 'Revenu':
+            inc_df = income2db(df)
+            # print(df.rows())
+            # print(inc_df.rows())
+            send_inc2(inc_df, engine)
+    except:
+        pass
 
     return render_template('file_read.html', show_table=show_table, file_table=file_table)
 

@@ -1,5 +1,5 @@
 import os
-
+import datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
@@ -91,12 +91,28 @@ def get_expanse(exp_val={}, all=True):
 
 
 def get_total():
+
     with engine.connect() as db:
-        expanse_tot = db.execute(text("""SELECT SUM(expanses) FROM public.entries """)).first()[0]
+        data       = pd.read_sql(text("select * from public.entries"), db)
+
+    import datetime
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month = first - datetime.timedelta(days=1)
+    lst_month=today.strftime("%Y-%m-"+"01")
+    ajd = today.strftime("%Y-%m-%d")
+
+    data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
+
+    data2 = data.loc[(data["""date_exp"""] >= lst_month)
+                     & (data["""date_exp"""] < ajd)]
+
+    expanse_tot = data2['expanses'].sum()
+
     return expanse_tot
 
 
-def plot_exp():
+def plot_exp(month=""):
     with engine.connect() as db:
         data       = pd.read_sql(text("select * from public.entries"), db)
         data_exp       = pd.read_sql(text(""" SELECT SUM(expanses) AS expanses, "date_exp"
@@ -110,7 +126,20 @@ def plot_exp():
     data.sort_values(by="""date_exp""", inplace = True)
     data_exp.sort_values(by="""date_exp""", inplace = True)
 
-    figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
+    import datetime
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month = first - datetime.timedelta(days=1)
+    lst_month=today.strftime("%Y-%m-"+"01")
+    ajd = today.strftime("%Y-%m-%d")
+
+    data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
+    data_exp["""date_exp"""]= pd.to_datetime(data_exp["""date_exp"""])
+
+    data2 = data.loc[(data["""date_exp"""] >= lst_month)
+                     & (data["""date_exp"""] < ajd)]
+    
+    figure1 = px.bar(y=data2["expanses"], x=data2["title"], color=data2["title"])
 
     # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
     # This is essentially breaking down the Express fig into it's traces
@@ -120,7 +149,7 @@ def plot_exp():
         figure1_traces.append(figure1["data"][trace])
 
     fig = make_subplots(1, 2,
-                    subplot_titles=['Time', 'Categories'])
+                    subplot_titles=['Time', 'Expanses (' + month + ')'])
     for traces in figure1_traces:
         fig.append_trace(traces, row=1, col=2)
 

@@ -5,10 +5,13 @@ from sqlalchemy import text
 
 try:
     from .sql.database import db_session, init_db, engine
+    print('OK')
 except:
     import sys
     sys.path.insert(0, r"""D:\Learn\Python\repos\First_Flask\First_Flask\sql""")
     from database import db_session, init_db, engine
+    from models import Entries, Categories
+    print('Except')
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -32,8 +35,9 @@ def html_style(df):
     df=df.replace('"dataframe data"','"table table-hover"')
     return df
 
-def convert2db(df):
+def expanse2db(df):
     res_df = pd.DataFrame()
+    df = df[df['Revenu'] == '0']
     res_df["title"]=df["Catégorie 1"] 
     res_df["comment"]=df["Remarques"] 
     res_df["expanses"]=df["Dépense"] 
@@ -45,22 +49,71 @@ def convert2db(df):
     res_df=res_df.rename_axis('id')
     return res_df
 
-def send2db(df):
-    print("send2db")
+def income2db(df):
+    res_df = pd.DataFrame()
+    df = df[df['Dépense'] == '0']
+    res_df["title"]=df["Catégorie 1"] 
+    res_df["comment"]=df["Remarques"] 
+    res_df["income"]=df["Revenu"] 
+    try:
+        res_df["income"]=res_df["income"].astype('float')
+    except:
+        res_df["income"]=res_df["income"].str.replace(',', '.').astype('float')
+    res_df["date_exp"]=df["Date"] 
+    res_df=res_df.rename_axis('id')
+    return res_df
+
+def send_exp(df, engine=engine):
+    print("send expanse")
+    print(df)
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
     with engine.connect() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
         df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
+def send_inc(df, engine=engine):
+    print("send income")
+    print(df)
+    sql = text("""SELECT title, comment, income, "date_exp" FROM entries""")
+    with engine.connect() as db:
+        sql_df = pd.read_sql(sql=sql, con=db)
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.income.isin(sql_df.income))]
+        df.to_sql('entries', con=db, if_exists='append', index=False)
+
+def send_inc2(df, engine=engine):
+    print("send income2")
+    print(df)
+    inc = {"title": None, "comment": None, "income": None, "date_exp": None}
+    keys = df.columns
+    print(df.index)
+
+    for ind in df.index:
+        print(ind)
+        inc["title"] = df['title'][ind]
+        inc["comment"] = df['comment'][ind]
+        inc["income"] = df['income'][ind]
+        inc["date_exp"] = df["""date_exp"""][ind]
+        e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
+        print(inc)
+        db_session.add(e)
+        db_session.commit()
+
 if __name__ == "__main__":
-    path = r"D:\Learn\Python\backup_android_budget\Compte Courant-20230324-182003.csv"
+    path = r"D:\Learn\Python\backup_android_budget\Compte Courant-20230620-203137.csv"
     df = read_csv(path)
     #print(html_style(df.to_html(classes="data", header="true")))
     print(df.columns)
-    res_df = convert2db(df)
-    print(res_df)
-    send2db(res_df)
+    rslt_df = df[df['Dépense'] == '0'] 
+    print(rslt_df)
+    exp_df = expanse2db(df)
+    print(exp_df)
+    inc_df = income2db(df)
+    print(inc_df)
+    send_exp(exp_df)
+    send_inc(inc_df)
     
+    
+
     #send2db(res_df)
     

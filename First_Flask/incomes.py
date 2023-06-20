@@ -3,6 +3,8 @@ import os
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
+import datetime
+
 import json
 from sqlalchemy import create_engine, delete
 from sqlalchemy import text
@@ -100,7 +102,7 @@ def get_total():
     return expanse_tot
 
 
-def plot_inc():
+def plot_inc(month=""):
     with engine.connect() as db:
         data       = pd.read_sql(text("select * from public.entries"), db)
         data_exp       = pd.read_sql(text(""" SELECT SUM(income) AS income, "date_exp"
@@ -114,8 +116,15 @@ def plot_inc():
     data.sort_values(by="""date_exp""", inplace = True)
     data_exp.sort_values(by="""date_exp""", inplace = True)
 
-    figure1 = px.bar(y=data["income"], x=data["title"], color=data["title"])
-
+    today = datetime.date.today()
+    first = today.replace(day=1)
+    last_month = first - datetime.timedelta(days=1)
+    lst_month=today.strftime("01"+"/%m/%Y")
+    ajd = today.strftime("%d/%m/%Y")
+    data2 = data.loc[(data["""date_exp"""] >= lst_month)
+                     & (data["""date_exp"""] < ajd)]
+    figure1 = px.bar(y=data2["income"], x=data2["title"], color=data2["title"])
+    print(data2)
     # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
     # This is essentially breaking down the Express fig into it's traces
     figure1_traces = []
@@ -124,7 +133,7 @@ def plot_inc():
         figure1_traces.append(figure1["data"][trace])
 
     fig = make_subplots(1, 2,
-                    subplot_titles=['Time', 'Categories'])
+                    subplot_titles=['Time', 'Incomes (' + month + ')'])
     for traces in figure1_traces:
         fig.append_trace(traces, row=1, col=2)
 
