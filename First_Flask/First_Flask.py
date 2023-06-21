@@ -22,12 +22,13 @@ import psycopg2
 import pandas as pd
 
 from .sql.database import db_session, init_db, engine
-from .sql.models import Entries, Categories
+from .sql.models import Entries, Categories, Budget
 
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
+from .budget import budget_id, addbudget,get_budget
 from .incomes import get_income, plot_inc, add_income
 from .categories import add_categories_from_list, get_all_cat, update_cat
-from .read_file import read_csv, html_style, income2db, expanse2db, send_inc, send_exp, send_inc2
+from .read_file import read_csv, html_style, income2db, expanse2db, send_inc, send_exp, dwnl2db_inc, dwnl2db_exp
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = r"D:\Learn\Python\backup_android_budget\new"
@@ -64,7 +65,6 @@ def initdb_command():
 def show_entries():
     data=input_id()
     entries = get_expanse()
-    a=get_expanse(exp_val=entries[3],all=False)
 
     today_date = datetime.today().strftime("%Y-%m-%d")
     num = datetime.today().month
@@ -204,24 +204,63 @@ def get_file():
 
     try:
         if request.form.get('check_exp') == 'Depense':
-            exp_df = expanse2db(df)
-            send_exp(exp_df, engine)
+            dwnl2db_exp(file_path)
         if  request.form.get('check_inc') == 'Revenu':
-            inc_df = income2db(df)
-            # print(df.rows())
-            # print(inc_df.rows())
-            send_inc2(inc_df, engine)
+            dwnl2db_inc(file_path)
+
     except:
         pass
 
     return render_template('file_read.html', show_table=show_table, file_table=file_table)
 
+@app.route('/budget/del',methods=['GET', 'POST'])
+def del_budget():
+    print("DELETE")
+    if not session.get('logged_in'):
+        abort(401)
+    
+    select = request.form['id_data']
+    print(select)
+    
+    Budget.query.filter_by(id=int(select)).delete()
+    db_session.commit()
+    
+    return redirect(url_for('show_budget'))
+
+@app.route('/add_budget', methods=['POST'])
+def add_budget():
+    print("ADD BUDGET")
+
+    if not session.get('logged_in'):
+        abort(401)
+    addbudget()
+    
+    return redirect(url_for('show_budget'))
+
+@app.route('/budget/del_row/<id_val>')
+def del_row_bdg(id_val=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("DELETE ROW")
+    select = id_val
+    print(select)
+    
+    Budget.query.filter_by(id=int(select)).delete()
+    db_session.commit()
+    
+    return redirect(url_for('show_budget'))
+
 @app.route('/budget', methods=['GET', 'POST'])
 def show_budget():
     print("Budget")
     
+    data=budget_id()
+    entries = get_budget()
+    cat_exp = get_all_cat()
+    
 
-    return render_template('budget.html')
+    return render_template('budget.html', data=data, entries=entries, kd_exp=cat_exp)
 
 @app.route('/del_cat/<id_val>')
 def del_cat(id_val=None):

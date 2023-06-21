@@ -138,8 +138,11 @@ def plot_exp(month=""):
 
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
                      & (data["""date_exp"""] < ajd)]
-    
-    figure1 = px.bar(y=data2["expanses"], x=data2["title"], color=data2["title"])
+    print(data)
+    try:
+        figure1 = px.bar(y=data2["expanses"], x=data2["title"], color=data2["title"])
+    except:
+        figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
 
     # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
     # This is essentially breaking down the Express fig into it's traces

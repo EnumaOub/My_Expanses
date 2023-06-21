@@ -30,11 +30,26 @@ class Entries(Base):
         self.date_exp = date_exp
         self.income = income
         self.result = result
-        print(income)
 
     def __repr__(self):
         return '<Title %r>' % (self.title)
-    
+
+class Budget(Base):
+    __tablename__ = 'budget'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True)
+    title = Column(String(120), unique=True)
+    value = Column(DOUBLE_PRECISION, unique=True)
+
+
+    def __init__(self, name=None, title=None, value=None):
+        self.name = name
+        self.title = title
+        self.value = value
+
+    def __repr__(self):
+        return '<Title %r>' % (self.title) 
+
 class Categories(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True)

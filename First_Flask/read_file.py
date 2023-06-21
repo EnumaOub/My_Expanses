@@ -99,6 +99,19 @@ def send_inc2(df, engine=engine):
         db_session.add(e)
         db_session.commit()
 
+def dwnl2db_inc(path):
+    df = read_csv(path)
+    inc_df = income2db(df)
+    print(inc_df)
+    send_inc(inc_df)
+
+def dwnl2db_exp(path):
+    df = read_csv(path)
+    exp_df = expanse2db(df)
+    print(exp_df)
+    send_exp(exp_df)
+
+
 if __name__ == "__main__":
     path = r"D:\Learn\Python\backup_android_budget\Compte Courant-20230620-203137.csv"
     df = read_csv(path)

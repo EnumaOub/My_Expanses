@@ -24,6 +24,93 @@
 <body>
     <h1>Budget</h1>
 
+    <div id="tabs">
+      <ul>
+        <li><a href="#lst_bdg">Budgets</a></li>
+        <li><a href="#add_bdg">Add budget</a></li>
+        <li><a href="#del_bdg">Delete budget</a></li>
+      </ul>
+      <div id="add_bdg">
+          <form action="{{ url_for('add_budget') }}" method=post class=add-entry>
+            <fieldset>
+              <h2 style="color:white" >Entries</h2>
+  
+              <div class="form-group">
+                <label for="cat" class="form-label mt-4" style="color:white" >Choose an expanse category</label>
+                <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+                  {% for k in kd_exp %}
+                    <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+                  <a href="../categories">
+                    <button type="button" class="btn btn-primary">MODIFY CATEGORIES</button>
+                  </a>
+              </div>
+              <div class="form-group">
+                <label for="expenses" class="form-label mt-4" style="color:white" >Value expanse</label>
+                <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
+              </div>
+                <div class="form-group">
+                  <label for="comment" class="form-label mt-4" style="color:white" >Title</label>
+                  <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+              
+  
+                  <button type="submit" class="btn btn-primary">Store</button>
+              </fieldset>
+          </form>
+        </div>
+      <div id="del_bdg">
+        <form action="{{ url_for('del_budget') }}" method=post class=del-entry>
+          <h2  style="color:white" >Delete Entries</h2>
+  
+          <div class="form-group">
+            <label for="del" class="form-label mt-4" style="color:white" >Choose an Entry to delete</label>
+            <SELECT class="form-select" id="del" name="id_data" class=data>
+              {% set n = data.id | length %}
+              {% for k in range(n) %}
+                <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
+              {% endfor %}
+            </SELECT>
+          </div>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+
+      <div id="lst_bdg">
+        <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Categories</th>
+                <th scope="col">Value</th>
+                <th scope="col">Name</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <ul class=entries>
+              <tbody>    
+                {% for entry in entries %}
+                  <tr class="table-primary">
+                        <td>{{ entry.title }}</td>
+                        <td>{{ entry.value }}</i><span>&#8364;</span></td>
+                        <td>{{ entry.name|safe }}</td>
+                      <td>
+                          <a href="{{ url_for('del_row_bdg', id_val=entry.id) }}"
+                        onclick="return confirm('Do you want to permanently the row {{ entry.comment }}?');">
+                        <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
+                        </button></a>
+                      </td>
+                    </tr>
+                {% else %}
+                  <li><em>No entries here so far</em>
+                {% endfor %}
+              </tbody>
+            </ul>
+          </table>
+    </div>
+
+  </div>
+
+
     <div class="text-center">
         <a href="../">
           <button type="button" class="btn btn-primary">Main</button>
