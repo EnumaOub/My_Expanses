@@ -25,7 +25,7 @@ from .sql.database import db_session, init_db, engine
 from .sql.models import Entries, Categories, Budget
 
 from .expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
-from .budget import budget_id, addbudget,get_budget
+from .budget import budget_id, addbudget, get_budget, get_all_bdg
 from .incomes import get_income, plot_inc, add_income
 from .categories import add_categories_from_list, get_all_cat, update_cat
 from .read_file import read_csv, html_style, income2db, expanse2db, send_inc, send_exp, dwnl2db_inc, dwnl2db_exp
@@ -73,10 +73,13 @@ def show_entries():
     expanse_tot = get_total()
     update_cat()
     cat_exp = get_all_cat()
+    bdg = get_all_bdg()
     
     graphJSON=plot_exp(month=month)
 
-    return render_template('show_entries.html', graphJSON=graphJSON, data=data, expanse_tot=round(expanse_tot,2), kd_exp=cat_exp, today_date=today_date, month=month)
+    return render_template('show_entries.html', graphJSON=graphJSON, data=data,
+                            expanse_tot=round(expanse_tot,2), kd_exp=cat_exp,
+                              today_date=today_date, month=month, bdg=bdg)
 
 @app.route('/add', methods=['POST'])
 def add_entry():

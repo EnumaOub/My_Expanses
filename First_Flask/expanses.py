@@ -22,14 +22,25 @@ from .sql.models import Entries, Categories
 from datetime import datetime
 
 def add_expanse():
-    exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-    exp["title"] = request.form['title']
-    exp["comment"] = request.form['comment']
-    exp["expanses"] = request.form['expanses']
-    exp["date_exp"] = request.form['date_exp']
-    e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
-    db_session.add(e)
-    db_session.commit()
+    if request.form.get('bdg', None) is None:
+        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+        exp["title"] = request.form['title']
+        exp["comment"] = request.form['comment']
+        exp["expanses"] = request.form['expanses']
+        exp["date_exp"] = request.form['date_exp']
+        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+        db_session.add(e)
+        db_session.commit()
+    else:
+        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
+        exp["title"] = request.form['title']
+        exp["comment"] = request.form['comment']
+        exp["expanses"] = request.form['expanses']
+        exp["date_exp"] = request.form['date_exp']
+        exp["budget_title"] = request.form['bdg']
+        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"], budget_title = exp["budget_title"])
+        db_session.add(e)
+        db_session.commit()
 
 def add_expanse_db(df):
     exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
@@ -66,26 +77,27 @@ def get_expanse(exp_val={}, all=True):
     exp_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
+            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
             WHERE expanses is not null""")).fetchall()
 
             for val in tot:
-                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
+                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
                 exp["id"] = val[0]
                 exp["title"]=val[1]
                 exp["comment"]=val[2]
                 exp["expanses"]=val[3]
                 exp["date_exp"]=val[4]
+                exp["budget_title"]=val[5]
                 
                 exp_tot.append(exp)
     else:
         if bool(exp_val):
             with engine.connect() as db:
                 exp_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
-                                    title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp 
+                                    title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp AND budget_title =:budget_title
                                     AND expanses is not null"""),
                                       {"id": exp_val["id"],"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
-                                        "date_exp": exp_val["date_exp"]}).fetchall()
+                                        "date_exp": exp_val["date_exp"], "budget_title": exp_val["budget_title"]}).fetchall()
 
     return exp_tot
 
@@ -138,7 +150,7 @@ def plot_exp(month=""):
 
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
                      & (data["""date_exp"""] < ajd)]
-    print(data)
+
     try:
         figure1 = px.bar(y=data2["expanses"], x=data2["title"], color=data2["title"])
     except:
@@ -160,23 +172,19 @@ def plot_exp(month=""):
     fig.add_trace(go.Scatter(x=data_exp["""date_exp"""], y=data_exp["expanses"], showlegend=False),
                   1,1)
     
-    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)')
-    fig.update_layout(margin=dict(t=35, b=10, l=0, r=0), title_font_color='White',
+    fig.update_layout(margin=dict(t=35, b=10, l=0, r=0),
     legend=dict(
         font=dict(
-            size=18,
-            color="white"
+            size=18
         ),
         title_text='Global Expanses'    )
 )
     fig.update_layout(font=dict(
-            size=12,  # Set the font size here
-            color="white"
+            size=12
     ))
 
     for i in fig['layout']['annotations']:
-        i['font'] = dict(size=20,color='white')
+        i['font'] = dict(size=20)
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     

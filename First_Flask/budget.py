@@ -74,3 +74,28 @@ def get_budget(bdg_val={}, all=True):
                                         "date_exp": bdg_val["date_exp"]}).fetchall()
 
     return bdg_tot
+
+
+def get_all_bdg(lst = True):
+    
+    cat_tot = []
+    cat_comp = []
+    with engine.connect() as db:
+        tot = db.execute(text("SELECT id, title FROM public.budget")).fetchall()
+        for val in tot:
+            categ = {"id": None, "name": None}
+            categ["id"]=val[0]
+            categ["name"]=val[1]
+            cat_comp.append(categ)
+            cat_tot.append(val[1])
+    if lst:
+        return cat_tot
+    else:
+        return cat_comp
+
+
+
+
+
+
+

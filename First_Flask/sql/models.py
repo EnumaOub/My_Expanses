@@ -21,15 +21,17 @@ class Entries(Base):
     date_exp = Column(Date, unique=True)
     income = Column(DOUBLE_PRECISION, unique=True)
     result = Column(DOUBLE_PRECISION, unique=True)
+    budget_title = Column(String(50), unique=True)
 
 
-    def __init__(self, title=None, comment=None, expanses=None, date_exp=None, income=None, result=None):
+    def __init__(self, title=None, comment=None, expanses=None, date_exp=None, income=None, result=None, budget_title=None):
         self.title = title
         self.comment = comment
         self.expanses = expanses
         self.date_exp = date_exp
         self.income = income
         self.result = result
+        self.budget_title = budget_title
 
     def __repr__(self):
         return '<Title %r>' % (self.title)
