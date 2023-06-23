@@ -1,0 +1,11 @@
+MANIFEST.in
+setup.py
+My_Budget/My_Budget.py
+My_Budget/__init__.py
+My_Budget/config.ini
+My_Budget/config.py
+My_Budget.egg-info/PKG-INFO
+My_Budget.egg-info/SOURCES.txt
+My_Budget.egg-info/dependency_links.txt
+My_Budget.egg-info/requires.txt
+My_Budget.egg-info/top_level.txt

@@ -8,8 +8,8 @@ Created on Tue Mar  7 19:18:27 2023
 from setuptools import setup
 
 setup(
-    name='First_Flask',
-    packages=['First_Flask'],
+    name='My_Budget',
+    packages=['My_Budget'],
     include_package_data=True,
     install_requires=[
         'flask',

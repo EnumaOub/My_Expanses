@@ -1,4 +1,4 @@
-graft First_Flask/templates
-graft First_Flask/static
-include First_Flask/config.ini
-include First_Flask/config.py
+graft My_Budget/templates
+graft My_Budget/static
+include My_Budget/config.ini
+include My_Budget/config.py
