@@ -136,7 +136,6 @@ def plot_exp(month=""):
     keys = data.columns
     print(keys)
     data.sort_values(by="""date_exp""", inplace = True)
-    data_exp.sort_values(by="""date_exp""", inplace = True)
 
     import datetime
     today = datetime.date.today()
@@ -146,45 +145,50 @@ def plot_exp(month=""):
     ajd = today.strftime("%Y-%m-%d")
 
     data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
-    data_exp["""date_exp"""]= pd.to_datetime(data_exp["""date_exp"""])
-
-    data2 = data.loc[(data["""date_exp"""] >= lst_month)
-                     & (data["""date_exp"""] < ajd)]
-
-    try:
-        figure1 = px.bar(y=data2["expanses"], x=data2["title"], color=data2["title"])
-    except:
-        figure1 = px.bar(y=data["expanses"], x=data["title"], color=data["title"])
-
-    # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
-    # This is essentially breaking down the Express fig into it's traces
-    figure1_traces = []
+    data['expanses'] = pd.to_numeric(data['expanses'], downcast='float')
     
-    for trace in range(len(figure1["data"])):
-        figure1_traces.append(figure1["data"][trace])
+    data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
+    data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
 
-    fig = make_subplots(1, 2,
-                    subplot_titles=['Time', 'Expanses (' + month + ')'])
-    for traces in figure1_traces:
-        fig.append_trace(traces, row=1, col=2)
+    most_recent_date = data['date'].max()
+    date_dernier_mois = [most_recent_date]
+    default_date = str(date_dernier_mois)[2:-2]
 
+    print("data['expanses']")
+    print(data['expanses'])
+
+    figs = {
+    c: px.pie(data.loc[data['month']==c], values="expanses", names="title", 
+             labels="title").update_layout(autosize=False, width=600, height=600)
+         for c in data.month.unique()
+}
     
-    fig.add_trace(go.Scatter(x=data_exp["""date_exp"""], y=data_exp["expanses"], showlegend=False),
-                  1,1)
-    
-    fig.update_layout(margin=dict(t=35, b=10, l=0, r=0),
-    legend=dict(
-        font=dict(
-            size=18
-        ),
-        title_text='Global Expanses'    )
-)
-    fig.update_layout(font=dict(
-            size=12
-    ))
+    defaultcat = data.month.unique()[0]
+    fig = figs[defaultcat].update_traces(visible=True)
+    for k in figs.keys():
+        print(k)
+        if k != defaultcat:
+            fig.add_traces(figs[k].data)
 
-    for i in fig['layout']['annotations']:
-        i['font'] = dict(size=20)
+    #finally build dropdown menu
+    fig.update_layout(
+        updatemenus=[
+            {
+                "buttons": [
+                    {
+                        "label": k,
+                        "method": "update",
+                        # list comprehension for which traces are visible
+                        "args": [{"visible": [kk == k for kk in data.month.astype(str).unique()]} # update
+                                ],
+                
+                    }
+                    for k in data.month.astype(str).unique()
+                ],
+                "direction": "down", "x": 0.07, "y": 1.15
+            }
+        ]
+    )
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     

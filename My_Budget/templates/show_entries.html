@@ -133,13 +133,16 @@
                 </div>
             </div>
             <!-- Card Body -->
+            
             <div class="card-body">
-              <div id='chart' class='chart'”></div>
+              <div id='chart' class='chart'”>
+                <center>
               <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
               <script type='text/javascript'>
                 var graphs = {{graphJSON | safe}};
                 Plotly.plot('chart',graphs,{});
-              </script>
+              </script></center>
+              </div>
             </div>
         </div>
       </div>
