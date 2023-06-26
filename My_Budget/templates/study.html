@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>My Budget App</title>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="/resources/demos/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
@@ -20,6 +21,12 @@
         'spinner': "Loading..."
     });
 });
+    </script>
+    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+      $(document).ready( function () {
+    $('table.display').DataTable();
+} );
     </script>
 <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
@@ -38,7 +45,6 @@
   <!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}"> -->
   <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
   <body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
 
     <div id="tabs">
       <ul>
@@ -46,7 +52,7 @@
         <li><a href="#inc">Incomes</a></li>
       </ul>
     <div id="exp">
-        <table class="table table-hover">
+        <table class="display table " id="">
             <thead>
               <tr>
                 <th scope="col">Categories</th>
@@ -81,7 +87,7 @@
           </table>
     </div>
     <div id="inc">
-      <table class="table table-hover">
+      <table class="display table" id="">
           <thead>
             <tr>
               <th scope="col">Categories</th>
