@@ -40,7 +40,6 @@
 </script>
   </head>
 
-  <!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}"> -->
   <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
   <body>
 
@@ -72,7 +71,7 @@
                         <td>{{ entry.budget_title|safe }}</td>
                       <td>
                           <a href="{{ url_for('del_row', id_val=entry.id) }}"
-                        onclick="return confirm('Do you want to permanently the row {{ entry.comment }}?');">
+                        onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
                         <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                         </button></a>
                       </td>

@@ -8,13 +8,15 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 
 
 from My_Budget.sql.database import db_session, init_db, engine
-from My_Budget.sql.models import Entries, Categories, Budget
+from My_Budget.sql.models import Entries, Categories, Budget, Groceries
 
 from My_Budget.functions.expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
 from My_Budget.functions.budget import budget_id, addbudget, get_budget, get_all_bdg
 from My_Budget.functions.incomes import get_income, add_income
 from My_Budget.functions.categories import add_categories_from_list, get_all_cat, update_cat
 from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp
+from My_Budget.functions.groceries import id_gcr, add_grocery, get_grocery
+
 
 
 UPLOAD_FOLDER = r"D:\Learn\Python\backup_android_budget\new"
@@ -152,7 +154,7 @@ def show_data():
     entries = get_expanse()
     incomes = get_income()
 
-    return render_template('study.html', entries=entries, incomes=incomes)
+    return render_template('table.html', entries=entries, incomes=incomes)
 
 #########################################
 ############ FILE_READING ###############
@@ -302,3 +304,62 @@ def show_cat():
     
     entries = get_all_cat(lst=False) # Get all categories in database
     return render_template('categories.html', entries=entries)
+
+#########################################
+############ DATA_SHOW ##################
+#########################################
+
+### Called when we delete an grocery by choosing an id
+@app.route('/del_gcr/<id_gcr>')
+def del_gcr(id_gcr=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("DELETE GROCERY")
+    select = id_gcr # Get id of row to delete
+    Groceries.query.filter_by(id=int(select)).delete() # Delete by id
+    db_session.commit()
+    
+    return redirect(url_for('show_grocery'))
+
+### Called when we add grocery to entry by choosing an id
+
+@app.route('/add_gcr/<id_gcr>/<title>/<expanse>/<comment>/<budget_title>/<date_exp>')
+def send_gcr(title=None, expanse=None, comment=None,
+              budget_title=None, date_exp=None, id_gcr=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("ADD GROCERY TO EXPANSES")
+    select = id_gcr # Get id of row to delete
+    print()
+    add_expanse([title, comment, expanse, date_exp, budget_title])
+    Groceries.query.filter_by(id=int(select)).delete() # Delete by id
+    db_session.commit()
+    
+    return redirect(url_for('show_grocery'))
+
+### Called when we add an entry
+@app.route('/add_gcr', methods=['POST'])
+def add_gcr():
+    print("ADD GROCERY")
+    if not session.get('logged_in'):
+        abort(401)
+    add_grocery()
+
+    return redirect(url_for('show_grocery'))
+
+### get all groceries and show them in a table
+@app.route('/groceries', methods=['GET', 'POST'])
+def show_grocery():
+    print("SHOW GROCERIES")
+
+    entries = get_grocery()
+    update_cat() # Update all categories
+    cat_exp = get_all_cat() # get all categories to use for add entries
+    bdg = get_all_bdg() # get all budgets to use for add entries
+    
+    
+
+    return render_template('groceries.html', entries=entries, kd_exp=cat_exp,
+                            bdg=bdg)

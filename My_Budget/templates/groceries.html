@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>My Budget App</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script>
+    $(function () {
+      $("#tabs").tabs({
+        'ajaxOptions': {
+          'error': function (xhr, status, index, anchor) {
+            $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
+          }
+        },
+        'spinner': "Loading..."
+      });
+    });
+  </script>
+  <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('table.display').DataTable();
+    });
+  </script>
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="../static/style.css" rel="stylesheet">
+  <script>
+    $('.dropdown-toggle').dropdown();
+  </script>
+</head>
+
+<script>
+
+  function myCreateFunction() {
+    var table = document.getElementById("Grocery_id");
+    var row = table.insertRow(1);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
+    cell1.innerHTML = "<input type=text id='title'></input>";
+    cell2.innerHTML = "<input type=text id='expanse'></input>";
+    cell3.innerHTML = "<input type=text id='comment'></input>";
+    cell4.innerHTML = "<input type=text id='budget_title'></input>";
+    cell5.innerHTML = "<button type=button onclick=AddFunction(this)>Add</button>"
+    cell6.innerHTML = "<button type=button onclick=myDeleteFunction(this)>Delete</button>"
+  }
+
+  function AddFunction(r) {
+    var i = r.parentNode.parentNode.rowIndex;
+    document.getElementById("Grocery_id").deleteRow(i);
+  }
+
+  function myDeleteFunction(r) {
+    var i = r.parentNode.parentNode.rowIndex;
+    document.getElementById("Grocery_id").deleteRow(i);
+  }
+</script>
+
+
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+
+
+<body>
+  <!-- <button onclick="myCreateFunction()">Add Grocery</button> -->
+  <div id="tabs">
+    <ul>
+      <li><a href="#gcr_table">Table</a></li>
+      <li><a href="#add_gcr">Add groceries</a></li>
+    </ul>
+    <div id="gcr_table">
+      <table class="display table" id="Grocery_id">
+        <thead>
+          <tr>
+            <th scope="col">Categories</th>
+            <th scope="col">Value</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Budget</th>
+            <th scope="col">Date</th>
+            <th scope="col">Bought?</th>
+            <th scope="col">Delete?</th>
+          </tr>
+        </thead>
+        <ul class=entries>
+          <tbody>
+            {% for entry in entries %}
+            <tr class="table-primary">
+              <td>{{ entry.title }}</td>
+              <td>{{ entry.expanse }}</i><span>&#8364;</span></td>
+              <td>{{ entry.comment|safe }}</td>
+              <td>{{ entry.budget_title|safe }}</td>
+              <td>{{ entry.date_exp|safe }}</td>
+              <td>
+                <a href="{{ url_for('send_gcr', id_gcr=entry.id, title=entry.title,
+                      expanse=entry.expanse, comment=entry.comment, budget_title=entry.budget_title, 
+                      date_exp=entry.date_exp) }}"
+                  onclick="return confirm('Do you want to add the row {{ entry.comment }}?');">
+                  <button type="button" class="btn btn-sm btn-outline-danger">Bought</span>
+                  </button></a>
+              </td>
+              <td>
+                <a href="{{ url_for('del_gcr', id_gcr=entry.id) }}"
+                  onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
+                  <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
+                  </button></a>
+              </td>
+            </tr>
+            {% else %}
+            <li><em>No entries here so far</em>
+              {% endfor %}
+          </tbody>
+        </ul>
+      </table>
+    </div>
+
+    <div id="add_gcr">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title mb-0">Entries</h2>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('add_gcr') }}" method=post class=add-entry>
+            <fieldset>
+              <div class="form-group">
+                <label for="cat" class="form-label mt-4">Choose a category</label>
+                <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+                  {% for k in kd_exp %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+                <a href="../categories">
+                  <button type="button" class="btn btn-primary">MODIFY CATEGORIES</button>
+                </a>
+              </div>
+              <div class="form-group">
+                <label for="expenses" class="form-label mt-4">Value expanse</label>
+                <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
+              </div>
+              <div class="form-group">
+                <label for="comment" class="form-label mt-4">Comment</label>
+                <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="link" class="form-label mt-4">Link</label>
+                <dd><textarea class="form-control" id="link" name=link cols="4"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="bdg" class="form-label mt-4">Choose a budget</label>
+                <SELECT class="form-select" id="bdg" name="bdg" class=bdg>
+                  <option value="False" selected disabled hidden>Choose here</option>
+                  {% for k in bdg %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+              </div>
+              <button type="submit" class="btn btn-primary">Store</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="../">
+        <button type="button" class="btn btn-primary">Dashboard</button>
+      </a>
+      <a href="../data">
+        <button type="button" class="btn btn-primary">Expanses</button>
+      </a>
+    </div>
+
+</body>

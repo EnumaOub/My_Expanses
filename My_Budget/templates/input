@@ -1,5 +1,0 @@
-Choose a City<SELECT name="city">
-{% for c in cityList %}
-    <OPTION value={{c.city_id}}>{{c.city_name}}</option>
-{% endfor %}
-</SELECT>

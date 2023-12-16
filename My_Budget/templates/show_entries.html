@@ -3,160 +3,158 @@
 
 
 
-  {% if session.logged_in %}
+{% if session.logged_in %}
 
 
-  <div id="tabs">
-    <ul>
-      <li><a href="#exp_res">Expenses</a></li>
-      <li><a href="#add_exp">Add expenses/incomes</a></li>
-      <li><a href="#del_exp">Delete entries</a></li>
-    </ul>
+<div id="tabs">
+  <ul>
+    <li><a href="#exp_res">Expenses</a></li>
+    <li><a href="#add_exp">Add expenses/incomes</a></li>
+    <li><a href="#del_exp">Delete entries</a></li>
+  </ul>
 
-    <div id="add_exp">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title mb-0">Entries</h2>
-        </div>
-        <div class="card-body">
-            <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-              <fieldset>
+  <div id="add_exp">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title mb-0">Entries</h2>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+          <fieldset>
 
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="inc_exp" name="inc_exp" checked="">
-                  <label class="form-check-label" for="inc_exp" >Incomes/Expanses</label>
-                </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="inc_exp" name="inc_exp" checked="">
+              <label class="form-check-label" for="inc_exp">Incomes/Expanses</label>
+            </div>
 
-                <div class="form-group">
-                  <label for="cat" class="form-label mt-4"  >Choose an expanse category</label>
-                  <SELECT class="form-select" id="cat" name="title" class=kd_exp>
-                    {% for k in kd_exp %}
-                      <OPTION value="{{ k }}">{{ k }}</option>
-                    {% endfor %}
-                  </SELECT>
-                    <a href="/categories">
-                      <button type="button" class="btn btn-primary">MODIFY CATEGORIES</button>
-                    </a>
-                </div>
-                <div class="form-group">
-                  <label for="expenses" class="form-label mt-4"  >Value expanse</label>
-                  <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
-                </div>
-                  <div class="form-group">
-                    <label for="comment" class="form-label mt-4"  >Comment</label>
-                    <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
-                  </div>
-                    <div class="date-input">
-                      <label for="today_date" class="form-label mt-4"  >Choose a start date:</label><br>
-                      <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
-                  </div>
-                  <div class="form-group">
-                    <label for="bdg" class="form-label mt-4"  >Choose a budget</label>
-                    <SELECT class="form-select" id="bdg" name="bdg" class=bdg>
-                      <option value="False" selected disabled hidden>Choose here</option>
-                      {% for k in bdg %}
-                        <OPTION value="{{ k }}">{{ k }}</option>
-                      {% endfor %}
-                    </SELECT>
-                  </div>
-                    <button type="submit" class="btn btn-primary">Store</button>
-                </fieldset>
-            </form>
+            <div class="form-group">
+              <label for="cat" class="form-label mt-4">Choose an expanse category</label>
+              <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+                {% for k in kd_exp %}
+                <OPTION value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+              </SELECT>
+              <a href="/categories">
+                <button type="button" class="btn btn-primary">MODIFY CATEGORIES</button>
+              </a>
+            </div>
+            <div class="form-group">
+              <label for="expenses" class="form-label mt-4">Value expanse</label>
+              <input type=int class="form-control" id="expenses" name=expanses placeholder="expenses">
+            </div>
+            <div class="form-group">
+              <label for="comment" class="form-label mt-4">Comment</label>
+              <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+            </div>
+            <div class="date-input">
+              <label for="today_date" class="form-label mt-4">Choose a start date:</label><br>
+              <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
+            </div>
+            <div class="form-group">
+              <label for="bdg" class="form-label mt-4">Choose a budget</label>
+              <SELECT class="form-select" id="bdg" name="bdg" class=bdg>
+                <option value="False" selected disabled hidden>Choose here</option>
+                {% for k in bdg %}
+                <OPTION value="{{ k }}">{{ k }}</option>
+                {% endfor %}
+              </SELECT>
+            </div>
+            <button type="submit" class="btn btn-primary">Store</button>
+          </fieldset>
+        </form>
       </div>
     </div>
-      </div>
+  </div>
 
-    <div id="del_exp">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title mb-0">Delete Entries</h2>
-        </div>
-        <div class="card-body">
+  <div id="del_exp">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title mb-0">Delete Entries</h2>
+      </div>
+      <div class="card-body">
         <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
 
           <div class="form-group">
-            <label for="del" class="form-label mt-4"  >Choose an Entry to delete</label>
+            <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
             <SELECT class="form-select" id="del" name="id_data" class=data>
               {% set n = data.id | length %}
               {% for k in range(n) %}
-                <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
+              <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
               {% endfor %}
             </SELECT>
           </div>
           <button type="submit" class="btn btn-danger">Delete</button>
         </form>
       </div>
-      </div>
-      </div>
-{% endif %}
+    </div>
+  </div>
+
   <div id="exp_res">
 
     <body id="page-top">
-    
-    <div id="content-wrapper" class="d-flex flex-column">
-      <div id="content">
-        <div class="container-fluid">
 
-              <!-- Page Heading -->
-              <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                  <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-              </div>
-          
+      <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+          <div class="container-fluid">
 
-          <div class="mx-auto" style="width: 200px;">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            </div>
+
+
+            <div class="mx-auto" style="width: 200px;">
               <div class="card border-left-primary shadow h-100 py-2">
-                  <div class="card-body">
-                      <div class="row no-gutters align-items-center">
-                          <div class="col mr-2">
-                              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                  Expanses ({{ month }})</div>
-                              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expanse_tot }}<span>&#8364;</span></div>
-                          </div>
-                          <div class="col-auto">
-                              <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                          </div>
-                      </div>
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Expanses ({{ month }})</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expanse_tot }}<span>&#8364;</span></div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
                   </div>
+                </div>
               </div>
-          </div>
+            </div>
 
-          <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div
-                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
                 <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
+                  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                  </a>
                 </div>
-            </div>
-            <!-- Card Body -->
-            
-            <div class="card-body">
-              <div id='chart' class='chart'”>
-                
-              <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-              <script type='text/javascript'>
-                var graphs = {{graphJSON | safe}};
-                Plotly.plot('chart',graphs,{});
-              </script>
+              </div>
+              <!-- Card Body -->
+
+              <div class="card-body">
+                <div id='chart' class='chart' ”>
+
+                  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+                  <script type='text/javascript'>
+                    var graphs = {{ graphJSON | safe}};
+                    Plotly.plot('chart', graphs, {});
+                  </script>
+                </div>
               </div>
             </div>
+          </div>
         </div>
       </div>
+
+    </body>
+
+
+
+
   </div>
-</div>
-
-</body>
-    
-        
-
 
 </div>
-    
-  </div>
 </div>
 
 
@@ -165,40 +163,58 @@
   <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
-    <!-- Divider -->
+      <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-          <a class="nav-link" href="/">
-              <i class="fas fa-fw fa-tachometer-alt"></i>
-              <span><strong><font color=white>Dashboard</FONT></strong></span></a>
+        <a class="nav-link" href="/">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span><strong>
+              <font color=white>Dashboard</FONT>
+            </strong></span></a>
       </li>
 
-      <!-- Nav Item - Charts -->
+      
       <li class="nav-item">
-          <a class="nav-link" href="/data">
-              <i class="fas fa-fw fa-chart-area"></i>
-              <span><font color=white>Data</FONT></span></a>
+        <a class="nav-link" href="/data">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>
+            <font color=white>Data</FONT>
+          </span></a>
       </li>
 
-      <!-- Nav Item - Tables -->
+      
       <li class="nav-item">
-          <a class="nav-link" href="/budget">
-              <i class="fas fa-fw fa-table"></i>
-              <span><font color=white>Budget</FONT></span></a>
+        <a class="nav-link" href="/budget">
+          <i class="fas fa-fw fa-table"></i>
+          <span>
+            <font color=white>Budget</FONT>
+          </span></a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link" href="/file_read">
-            <i class="fas fa-fw fa-table"></i>
-            <span><font color=white>File</FONT></span></a>
+          <i class="fas fa-fw fa-table"></i>
+          <span>
+            <font color=white>File</FONT>
+          </span></a>
       </li>
 
       <li class="nav-item">
         <a class="nav-link" href="/categories">
-            <i class="fas fa-fw fa-table"></i>
-            <span><font color=white>Categories</FONT></span></a>
+          <i class="fas fa-fw fa-table"></i>
+          <span>
+            <font color=white>Categories</FONT>
+          </span></a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/groceries">
+          <i class="fas fa-fw fa-table"></i>
+          <span>
+            <font color=white>List Groceries</FONT>
+          </span></a>
       </li>
 
     </ul>
@@ -207,6 +223,6 @@
 </nav>
 
 
-
+{% endif %}
 
 {% endblock %}

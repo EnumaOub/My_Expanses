@@ -12,26 +12,36 @@ from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries, Categories, Budget
 
 
-def add_expanse():
-    if request.form.get('bdg', None) is None:
-        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-        exp["title"] = request.form['title']
-        exp["comment"] = request.form['comment']
-        exp["expanses"] = request.form['expanses']
-        exp["date_exp"] = request.form['date_exp']
-        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
-        db_session.add(e)
-        db_session.commit()
+def add_expanse(grocery=[]):
+    if grocery:
+        if grocery[4] == "NaN":
+            e = Entries(grocery[0], grocery[1], grocery[2], grocery[3])
+            db_session.add(e)
+            db_session.commit()
+        else:
+            e = Entries(grocery[0], grocery[1], grocery[2], grocery[3], budget_title = grocery[4])
+            db_session.add(e)
+            db_session.commit()
     else:
-        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
-        exp["title"] = request.form['title']
-        exp["comment"] = request.form['comment']
-        exp["expanses"] = request.form['expanses']
-        exp["date_exp"] = request.form['date_exp']
-        exp["budget_title"] = request.form['bdg']
-        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"], budget_title = exp["budget_title"])
-        db_session.add(e)
-        db_session.commit()
+        if request.form.get('bdg', None) is None:
+            exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+            exp["title"] = request.form['title']
+            exp["comment"] = request.form['comment']
+            exp["expanses"] = request.form['expanses']
+            exp["date_exp"] = request.form['date_exp']
+            e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+            db_session.add(e)
+            db_session.commit()
+        else:
+            exp = {"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
+            exp["title"] = request.form['title']
+            exp["comment"] = request.form['comment']
+            exp["expanses"] = request.form['expanses']
+            exp["date_exp"] = request.form['date_exp']
+            exp["budget_title"] = request.form['bdg']
+            e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"], budget_title = exp["budget_title"])
+            db_session.add(e)
+            db_session.commit()
 
 def add_expanse_db(df):
     exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}

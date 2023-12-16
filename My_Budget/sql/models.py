@@ -7,10 +7,7 @@ Created on Wed Mar  8 20:14:41 2023
 
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
-try:
-    from .database import Base
-except:
-    from database import Base
+from My_Budget.sql.database import Base
 
 class Entries(Base):
     __tablename__ = 'entries'
@@ -64,3 +61,24 @@ class Categories(Base):
 
     def __repr__(self):
         return '<Name %r>' % (self.name)
+
+class Groceries(Base):
+    __tablename__ = 'groceries'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(50), unique=True)
+    comment = Column(String(120), unique=True)
+    expanse = Column(DOUBLE_PRECISION, unique=True)
+    budget_title = Column(String(50), unique=True)
+    link = Column(String(400), unique=True)
+    
+
+
+    def __init__(self, title=None, comment=None, expanse=None, link=None, budget_title=None):
+        self.title = title
+        self.comment = comment
+        self.link = link
+        self.expanse = expanse
+        self.budget_title = budget_title
+
+    def __repr__(self):
+        return '<Title %r>' % (self.title)
