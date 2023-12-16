@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb 26 19:14:19 2023
-
-@author: rayan
-"""
 
 from configparser import ConfigParser
 

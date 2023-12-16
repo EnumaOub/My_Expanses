@@ -1,17 +1,9 @@
 import pandas as pd
-import os
 import csv
 from sqlalchemy import text
 
-try:
-    from .sql.database import db_session, init_db, engine
-    print('OK')
-except:
-    import sys
-    sys.path.insert(0, r"""D:\Learn\Python\repos\First_Flask\First_Flask\sql""")
-    from database import db_session, init_db, engine
-    from models import Entries, Categories
-    print('Except')
+from My_Budget.sql.database import db_session, init_db, engine
+from My_Budget.sql.models import Entries, Categories, Budget
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -24,7 +16,6 @@ def get_delimiter(path, bytes = 4096):
     return delimiter
 
 def read_csv(path):
-    #path = request.files['path']
     delimiter = get_delimiter(path)
     df = pd.read_csv(path,delimiter=delimiter)
     return df
@@ -65,7 +56,6 @@ def income2db(df):
 
 def send_exp(df, engine=engine):
     print("send expanse")
-    print(df)
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
     with engine.connect() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
@@ -74,7 +64,7 @@ def send_exp(df, engine=engine):
 
 def send_inc(df, engine=engine):
     print("send income")
-    print(df)
+
     sql = text("""SELECT title, comment, income, "date_exp" FROM entries""")
     with engine.connect() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
@@ -83,33 +73,28 @@ def send_inc(df, engine=engine):
 
 def send_inc2(df, engine=engine):
     print("send income2")
-    print(df)
+
     inc = {"title": None, "comment": None, "income": None, "date_exp": None}
-    keys = df.columns
-    print(df.index)
 
     for ind in df.index:
-        print(ind)
         inc["title"] = df['title'][ind]
         inc["comment"] = df['comment'][ind]
         inc["income"] = df['income'][ind]
         inc["date_exp"] = df["""date_exp"""][ind]
         e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
-        print(inc)
+
         db_session.add(e)
         db_session.commit()
 
 def dwnl2db_inc(path):
     df = read_csv(path)
     inc_df = income2db(df)
-    print(inc_df)
-    send_inc(inc_df)
+
 
 def dwnl2db_exp(path):
     df = read_csv(path)
     exp_df = expanse2db(df)
-    print(exp_df)
-    send_exp(exp_df)
+
 
 
 if __name__ == "__main__":

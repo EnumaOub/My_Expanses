@@ -1,46 +1,36 @@
-import os
+from datetime import datetime
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
-import datetime
-
 import json
-from sqlalchemy import create_engine, delete
 from sqlalchemy import text
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import psycopg2 
 import plotly.express as px
 import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
 import pandas as pd
 
-from .sql.database import db_session, init_db, engine
-from .sql.models import Entries, Categories
+from My_Budget.sql.database import db_session, init_db, engine
+from My_Budget.sql.models import Entries, Categories, Budget
 
-from datetime import datetime
 
 def add_income():
     inc = {"title": None, "comment": None, "income": None, "date_exp": None}
-    print(inc)
+
     inc["title"] = request.form['title']
     inc["comment"] = request.form['comment']
     inc["income"] = request.form['expanses']
-    print(inc)
     inc["date_exp"] = request.form['date_exp']
-    print(inc)
+
     e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
-    print(e)
     
     db_session.add(e)
     db_session.commit()
 
 def add_income_db(df):
     inc = {"title": None, "comment": None, "income": None, "date_exp": None}
-    keys = sql_df.columns
+    keys = df.columns
     for index, row in df.iterrows():
         inc["title"] = row['title']
         inc["comment"] = row['comment']
@@ -113,12 +103,10 @@ def plot_inc(month=""):
 
     keys = data.columns
     print(keys)
-    data.sort_values(by="""date_exp""", inplace = True)
-    data_exp.sort_values(by="""date_exp""", inplace = True)
+    data = data.sort_values(by="""date_exp""")
+    data_exp = data_exp.sort_values(by="""date_exp""")
 
     today = datetime.date.today()
-    first = today.replace(day=1)
-    last_month = first - datetime.timedelta(days=1)
     lst_month=today.strftime("01"+"/%m/%Y")
     ajd = today.strftime("%d/%m/%Y")
     data2 = data.loc[(data["""date_exp"""] >= lst_month)

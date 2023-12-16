@@ -1,26 +1,14 @@
-import os
+import pandas as pd
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
      
 from sqlalchemy import create_engine, delete, func, and_
 from sqlalchemy import text
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import psycopg2 
 
-import pandas as pd
+from My_Budget.sql.database import db_session, init_db, engine
+from My_Budget.sql.models import Entries, Categories, Budget
 
-try:
-    from .sql.database import db_session, init_db, engine
-    from .sql.models import Entries, Categories
-except:
-    import sys
-    sys.path.insert(0, r"""D:\Learn\Python\repos\First_Flask\First_Flask\sql""")
-    from database import db_session, init_db, engine
-    from models import Entries, Categories
-
-from datetime import datetime
 
 def del_duplicate():
     subq = (

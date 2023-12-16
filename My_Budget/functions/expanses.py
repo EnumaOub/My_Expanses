@@ -1,25 +1,16 @@
-import os
-import datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
 import json
-from sqlalchemy import create_engine, delete
 from sqlalchemy import text
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-import psycopg2 
 import plotly.express as px
 import plotly
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
+import datetime
 import pandas as pd
 
-from .sql.database import db_session, init_db, engine
-from .sql.models import Entries, Categories
+from My_Budget.sql.database import db_session, init_db, engine
+from My_Budget.sql.models import Entries, Categories, Budget
 
-from datetime import datetime
 
 def add_expanse():
     if request.form.get('bdg', None) is None:
@@ -44,7 +35,7 @@ def add_expanse():
 
 def add_expanse_db(df):
     exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-    keys = sql_df.columns
+    keys = df.columns
     for index, row in df.iterrows():
         exp["title"] = row['title']
         exp["comment"] = row['comment']
@@ -107,10 +98,8 @@ def get_total():
     with engine.connect() as db:
         data       = pd.read_sql(text("select * from public.entries"), db)
 
-    import datetime
+    
     today = datetime.date.today()
-    first = today.replace(day=1)
-    last_month = first - datetime.timedelta(days=1)
     lst_month=today.strftime("%Y-%m-"+"01")
     ajd = today.strftime("%Y-%m-%d")
 
@@ -126,33 +115,17 @@ def get_total():
 
 def plot_exp(month=""):
     with engine.connect() as db:
-        data       = pd.read_sql(text("select * from public.entries"), db)
-        data_exp       = pd.read_sql(text(""" SELECT SUM(expanses) AS expanses, "date_exp"
-                                            FROM public.entries WHERE expanses is not null
-                                              GROUP BY "date_exp" """), db);
-
-
+        data = pd.read_sql(text("select * from public.entries"), db)
 
     keys = data.columns
     print(keys)
-    data.sort_values(by="""date_exp""", inplace = True)
+    data = data.sort_values(by="""date_exp""")
 
-    import datetime
-    today = datetime.date.today()
-    first = today.replace(day=1)
-    last_month = first - datetime.timedelta(days=1)
-    lst_month=today.strftime("%Y-%m-"+"01")
-    ajd = today.strftime("%Y-%m-%d")
-
-    data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
+    data["""date_exp"""] = pd.to_datetime(data["""date_exp"""])
     data['expanses'] = pd.to_numeric(data['expanses'], downcast='float')
     
     data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
     data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
-
-    most_recent_date = data['date'].max()
-    date_dernier_mois = [most_recent_date]
-    default_date = str(date_dernier_mois)[2:-2]
 
     print("data['expanses']")
     print(data['expanses'])
