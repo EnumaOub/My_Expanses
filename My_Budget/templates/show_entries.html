@@ -136,12 +136,12 @@
             
             <div class="card-body">
               <div id='chart' class='chart'”>
-                <center>
+                
               <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
               <script type='text/javascript'>
                 var graphs = {{graphJSON | safe}};
                 Plotly.plot('chart',graphs,{});
-              </script></center>
+              </script>
               </div>
             </div>
         </div>

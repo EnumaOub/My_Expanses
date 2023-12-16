@@ -1,98 +1,97 @@
 <!doctype html>
 <html lang="en-US">
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>My Budget App</title>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    <script>
-    $(function() {
-    $("#tabs").tabs({
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>My Budget App</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script>
+    $(function () {
+      $("#tabs").tabs({
         'ajaxOptions': {
-            'error': function(xhr, status, index, anchor) {
-                $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
-            }
+          'error': function (xhr, status, index, anchor) {
+            $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
+          }
         },
         'spinner': "Loading..."
+      });
     });
-});
-    </script>
-    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script>
-      $(document).ready( function () {
-    $('#myTable').DataTable();
-} );
-    </script>
-<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+  </script>
+  <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#myTable').DataTable();
+    });
+  </script>
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
 
-    <!-- Custom styles for this template-->
-    <link href="../static/style.css" rel="stylesheet">
-    <script>
-    .dropdown-toggle {
-      background-color: red;
-  }
-</script>
-  </head>
+  <!-- Custom styles for this template-->
+  <link href="../static/style.css" rel="stylesheet">
+  <script>
+    $('.dropdown-toggle').dropdown();
+  </script>
+</head>
 
-  <!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}"> -->
-  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-  <body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}"> -->
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
 
-    <h1>Categories</h1>
-    <div id="tabs">
-        <ul>
-          <li><a href="#add">Add Category</a></li>
-          <li><a href="#del">Delete Category</a></li>
-        </ul>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <h1>Categories</h1>
+  <div id="tabs">
+    <ul>
+      <li><a href="#add">Add Category</a></li>
+      <li><a href="#del">Delete Category</a></li>
+    </ul>
     <div id="add">
-        <form action="{{ url_for('add_cat') }}" method=post class=add-cat>
-            <div class="form-group">
-                <label for="cat" class="form-label mt-4" style="color:white" >Category name</label>
-                <input type=int class="form-control" id="cat" name=cat placeholder="category">
-            </div>
-            <button type="submit" class="btn btn-primary">Store</button>
-        </form>
+      <form action="{{ url_for('add_cat') }}" method=post class=add-cat>
+        <div class="form-group">
+          <label for="cat" class="form-label mt-4" style="color:white">Category name</label>
+          <input type=int class="form-control" id="cat" name=cat placeholder="category">
+        </div>
+        <button type="submit" class="btn btn-primary">Store</button>
+      </form>
     </div>
     <div id="del">
-        <table class="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">Categories</th>
-                <th scope="col">Delete</th>
-              </tr>
-            </thead>
-            <ul class=entries>
-              <tbody>    
-                {% for entry in entries %}
-                  <tr class="table-primary">
-                        <td>{{ entry.name }}</td>
-                      <td>
-                          <a href="{{ url_for('del_cat', id_val=entry.id) }}"
-                        onclick="return confirm('Do you want to permanently the row {{ entry.name }}?');">
-                        <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
-                        </button></a>
-                      </td>
-                    </tr>
-                {% else %}
-                  <li><em>No entries here so far</em>
-                {% endfor %}
-              </tbody>
-            </ul>
-          </table>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Categories</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <ul class=entries>
+          <tbody>
+            {% for entry in entries %}
+            <tr class="table-primary">
+              <td>{{ entry.name }}</td>
+              <td>
+                <a href="{{ url_for('del_cat', id_val=entry.id) }}"
+                  onclick="return confirm('Do you want to permanently the row {{ entry.name }}?');">
+                  <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
+                  </button></a>
+              </td>
+            </tr>
+            {% else %}
+            <li><em>No entries here so far</em>
+              {% endfor %}
+          </tbody>
+        </ul>
+      </table>
     </div>
     <div class="text-center">
-        <a href="../">
-          <button type="button" class="btn btn-primary">Dashboard</button>
-        </a>
-      </div>
+      <a href="../">
+        <button type="button" class="btn btn-primary">Dashboard</button>
+      </a>
+    </div>
 
 </body>
