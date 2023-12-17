@@ -1,9 +1,115 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('table.display').DataTable();
+  });
+</script>
 
 
+
+<div id="wrapper">
+
+  <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <div class="sidebar-brand-icon rotate-n-15">
+        <i class="fa fa-credit-card"></i>
+      </div>
+      <div class="sidebar-brand-text mx-3">My Budget</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+      <a class="nav-link" href="/">
+        <i class="fa fa-home fa-fw"></i>
+        <span><strong>
+            <font color=white>Dashboard</FONT>
+          </strong></span></a>
+    </li>
+
+    <hr class="sidebar-divider">
+    
+    <div class="sidebar-heading">
+      Connect
+  </div>
+
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Log In/Out
+      </a>
+      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <h6 class="collapse-header">Admin:</h6>
+          {% if not session.logged_in %}
+          <a class="collapse-item" href="{{ url_for('login') }}">Log In</a>
+          {% else %}
+          <a class="collapse-item" href="{{ url_for('logout') }}">Logout</a>
+          {% endif %}
+        </div>
+    </li>
 {% if session.logged_in %}
+
+
+<hr class="sidebar-divider">
+
+<div class="sidebar-heading">
+  Pages Budget
+</div>
+
+<li class="nav-item">
+  <a class="nav-link" href="/data">
+    <i class="fas fa-fw fa-table"></i>
+    <span>
+      <font color=white>Data</FONT>
+    </span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<li class="nav-item">
+  <a class="nav-link" href="/budget">
+    <i class="fas fa-fw fa-table"></i>
+    <span>
+      <font color=white>Budget</FONT>
+    </span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<li class="nav-item">
+  <a class="nav-link" href="/file_read">
+    <i class="fa fa-file"></i>
+    <span>
+      <font color=white>File</FONT>
+    </span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<li class="nav-item">
+  <a class="nav-link" href="/categories">
+    <i class="fas fa-fw fa-table"></i>
+    <span>
+      <font color=white>Categories</FONT>
+    </span></a>
+</li>
+
+<hr class="sidebar-divider">
+
+<li class="nav-item">
+  <a class="nav-link" href="/groceries">
+    <i class="fa fa-shopping-basket"></i>
+    <span>
+      <font color=white>List Groceries</FONT>
+    </span></a>
+</li>
+
+</ul>
 
 
 <div id="tabs">
@@ -14,6 +120,9 @@
   </ul>
 
   <div id="add_exp">
+
+
+
     <div class="card">
       <div class="card-header">
         <h2 class="card-title mb-0">Entries</h2>
@@ -63,6 +172,7 @@
           </fieldset>
         </form>
       </div>
+
     </div>
   </div>
 
@@ -91,17 +201,21 @@
 
   <div id="exp_res">
 
-    <body id="page-top">
+    <div id="content-wrapper" class="d-flex flex-column">
 
-      <div id="content-wrapper" class="d-flex flex-column">
-        <div id="content">
-          <div class="container-fluid">
+      <!-- Main Content -->
+      <div id="content">
 
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-              <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-            </div>
+        <!-- Topbar -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        </div>
+        <div class="container-fluid">
 
 
+
+          <!-- Content Row -->
+          <div class="row">
             <div class="mx-auto" style="width: 200px;">
               <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -109,32 +223,22 @@
                     <div class="col mr-2">
                       <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Expanses ({{ month }})</div>
-                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expanse_tot }}<span>&#8364;</span></div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expanse_tot }}<span>&#8364;</span>
+                      </div>
                     </div>
                     <div class="col-auto">
-                      <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                      <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="card shadow mb-4">
-              <!-- Card Header - Dropdown -->
-              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                <div class="dropdown no-arrow">
-                  <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                  </a>
-                </div>
-              </div>
-              <!-- Card Body -->
-
-              <div class="card-body">
+          <div class="row">
+            <div class="col-sm">
+              <div class="card shadow mb-4">
                 <div id='chart' class='chart' ”>
-
                   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
                   <script type='text/javascript'>
                     var graphs = {{ graphJSON | safe}};
@@ -143,85 +247,119 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-sm">
+              <div class="card shadow mb-4">
+                <h3 class="h3 mb-0 text-gray-800">Groceries List</h3>
+                <table class="display table" id="Grocery_id">
+                  <thead>
+                    <tr>
+                      <th scope="col">Categories</th>
+                      <th scope="col">Value</th>
+                      <th scope="col">Comment</th>
+                    </tr>
+                  </thead>
+                  <ul class=groceries>
+                    <tbody>
+                      {% for entry in groceries %}
+                      <tr class="table-primary">
+                        <td>{{ entry.title }}</td>
+                        <td>{{ entry.expanse }}</i><span>&#8364;</span></td>
+                        <td>{{ entry.comment|safe }}</td>
+                      </tr>
+                      {% else %}
+                      <li><em>No entries here so far</em>
+                        {% endfor %}
+                    </tbody>
+                  </ul>
+                </table>
+              </div>
+            </div>
           </div>
+
+          <div class="row">
+            <div class="col-sm">
+              <div class="card shadow mb-4">
+                <h3 class="h3 mb-0 text-gray-800">Expanses</h3>
+                <table class="display table " id="">
+                  <thead>
+                    <tr>
+                      <th scope="col">Categories</th>
+                      <th scope="col">Value</th>
+                      <th scope="col">Comment</th>
+                    </tr>
+                  </thead>
+                  <ul class=entries>
+                    <tbody>
+                      {% for entry in entries %}
+                      <tr class="table-primary">
+                        <td>{{ entry.title }}</td>
+                        <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
+                        <td>{{ entry.comment|safe }}</td>
+                      </tr>
+                      {% else %}
+                      <li><em>No entries here so far</em>
+                        {% endfor %}
+                    </tbody>
+                  </ul>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-sm">
+              <div class="card shadow mb-4">
+                <h3 class="h3 mb-0 text-gray-800">Incomes</h3>
+                <table class="display table" id="">
+                  <thead>
+                    <tr>
+                      <th scope="col">Categories</th>
+                      <th scope="col">Value</th>
+                      <th scope="col">Comment</th>
+                    </tr>
+                  </thead>
+                  <ul class=incomes>
+                    <tbody>
+                      {% for val in incomes %}
+                      <tr class="table-primary">
+                        <td>{{ val.title }}</td>
+                        <td>{{ val.income }}</i><span>&#8364;</span></td>
+                        <td>{{ val.comment|safe }}</td>
+                      </tr>
+                      {% else %}
+                      <li><em>No entries here so far</em>
+                        {% endfor %}
+                    </tbody>
+                  </ul>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+
         </div>
       </div>
-
-    </body>
-
-
-
-
+    </div>
   </div>
 
 </div>
 </div>
 
 
-<nav class="navbar fixed-bottom navbar-expand-lg navbar-light bg-primary">
+</body>
 
-  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 
-      <!-- Divider -->
-      <hr class="sidebar-divider my-0">
 
-      <!-- Nav Item - Dashboard -->
-      <li class="nav-item active">
-        <a class="nav-link" href="/">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span><strong>
-              <font color=white>Dashboard</FONT>
-            </strong></span></a>
-      </li>
 
-      
-      <li class="nav-item">
-        <a class="nav-link" href="/data">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>
-            <font color=white>Data</FONT>
-          </span></a>
-      </li>
+</div>
 
-      
-      <li class="nav-item">
-        <a class="nav-link" href="/budget">
-          <i class="fas fa-fw fa-table"></i>
-          <span>
-            <font color=white>Budget</FONT>
-          </span></a>
-      </li>
+</div>
+</div>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/file_read">
-          <i class="fas fa-fw fa-table"></i>
-          <span>
-            <font color=white>File</FONT>
-          </span></a>
-      </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/categories">
-          <i class="fas fa-fw fa-table"></i>
-          <span>
-            <font color=white>Categories</FONT>
-          </span></a>
-      </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/groceries">
-          <i class="fas fa-fw fa-table"></i>
-          <span>
-            <font color=white>List Groceries</FONT>
-          </span></a>
-      </li>
 
-    </ul>
-
-  </div>
-</nav>
-
+</div>
 
 {% endif %}
 

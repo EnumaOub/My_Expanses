@@ -86,12 +86,17 @@ def show_entries():
     update_cat() # Update all categories
     cat_exp = get_all_cat() # get all categories to use for add entries
     bdg = get_all_bdg() # get all budgets to use for add entries
+
+    entries = get_expanse(all = False, date=str(datetime.today().strftime("%Y%m"))+"01")
+    incomes = get_income(all = False, date=str(datetime.today().strftime("%Y%m"))+"01")
+    groceries = get_grocery()
     
     graphJSON=plot_exp(month=month) # get the plot
 
     return render_template('show_entries.html', graphJSON=graphJSON, data=data,
                             expanse_tot=round(expanse_tot,2), kd_exp=cat_exp,
-                              today_date=today_date, month=month, bdg=bdg)
+                              today_date=today_date, month=month, bdg=bdg,
+                              entries=entries, incomes=incomes, groceries = groceries)
 
 ### Called when we add an entry
 @app.route('/add', methods=['POST'])
@@ -324,7 +329,7 @@ def del_gcr(id_gcr=None):
 
 ### Called when we add grocery to entry by choosing an id
 
-@app.route('/add_gcr/<id_gcr>/<title>/<expanse>/<comment>/<budget_title>/<date_exp>')
+@app.route('/send_gcr/<id_gcr>/<title>/<expanse>/<comment>/<budget_title>/<date_exp>')
 def send_gcr(title=None, expanse=None, comment=None,
               budget_title=None, date_exp=None, id_gcr=None):
     if not session.get('logged_in'):
@@ -337,6 +342,19 @@ def send_gcr(title=None, expanse=None, comment=None,
     Groceries.query.filter_by(id=int(select)).delete() # Delete by id
     db_session.commit()
     
+    return redirect(url_for('show_grocery'))
+
+### Called when we add grocery to entry by choosing an id
+
+@app.route('/add_gcr_table/<id_gcr>/<title>/<expanse>/<comment>/<budget_title>/<link>')
+def add_gcr_table(title=None, expanse=None, comment=None,
+              budget_title=None, link=None, id_gcr=None):
+    if not session.get('logged_in'):
+        abort(401)
+    
+    print("ADD GROCERY")
+    add_grocery([title, comment, expanse, link, budget_title])
+
     return redirect(url_for('show_grocery'))
 
 ### Called when we add an entry

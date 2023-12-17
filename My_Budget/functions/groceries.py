@@ -8,7 +8,16 @@ from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries, Categories, Budget, Groceries
 
 
-def add_grocery():
+def add_grocery(grocery=[]):
+    if grocery:
+        if grocery[4] == "NaN":
+            e = Groceries(grocery[0], grocery[1], grocery[2], grocery[3])
+            db_session.add(e)
+            db_session.commit()
+        else:
+            e = Groceries(grocery[0], grocery[1], grocery[2], grocery[3], budget_title = grocery[4])
+            db_session.add(e)
+            db_session.commit()
     if request.form.get('bdg', None) is None:
         grocery = {"title": None, "expanse": None, "comment": None, "link": None}
         grocery["title"] = request.form['title']

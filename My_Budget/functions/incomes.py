@@ -58,7 +58,7 @@ def input_id():
 
     return data
 
-def get_income(inc_val={}, all=True):
+def get_income(inc_val={}, all=True, date=""):
     
     inc_tot =[]
     if all:
@@ -75,6 +75,22 @@ def get_income(inc_val={}, all=True):
                 inc["date_exp"]=val[4]
                 
                 inc_tot.append(inc)
+    elif date:
+        with engine.connect() as db:
+            tot = db.execute(text("""SELECT id, title, comment, income, "date_exp" FROM public.entries 
+            WHERE income is not null
+                AND "date_exp" >= '"""+str(date)+"""'""")).fetchall()
+
+            for val in tot:
+                inc = {"id": None,"title": None, "comment": None, "income": None, "date_exp": None}
+                inc["id"] = val[0]
+                inc["title"]=val[1]
+                inc["comment"]=val[2]
+                inc["income"]=val[3]
+                inc["date_exp"]=val[4]
+                
+                inc_tot.append(inc)
+    
     else:
         if bool(inc_val):
             with engine.connect() as db:

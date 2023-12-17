@@ -73,7 +73,7 @@ def input_id():
 
     return data
 
-def get_expanse(exp_val={}, all=True):
+def get_expanse(exp_val={}, all=True, date=""):
     
     exp_tot =[]
     if all:
@@ -91,6 +91,23 @@ def get_expanse(exp_val={}, all=True):
                 exp["budget_title"]=val[5]
                 
                 exp_tot.append(exp)
+    elif date:
+        with engine.connect() as db:
+            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
+            WHERE expanses is not null
+                AND "date_exp" >= '"""+str(date)+"""'""")).fetchall()
+
+            for val in tot:
+                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
+                exp["id"] = val[0]
+                exp["title"]=val[1]
+                exp["comment"]=val[2]
+                exp["expanses"]=val[3]
+                exp["date_exp"]=val[4]
+                exp["budget_title"]=val[5]
+                
+                exp_tot.append(exp)
+
     else:
         if bool(exp_val):
             with engine.connect() as db:
@@ -116,7 +133,7 @@ def get_total():
     data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
 
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
-                     & (data["""date_exp"""] < ajd)]
+                     & (data["""date_exp"""] <= ajd)]
 
     expanse_tot = data2['expanses'].sum()
 
