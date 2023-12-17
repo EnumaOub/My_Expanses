@@ -7,7 +7,10 @@ Created on Wed Mar  8 20:14:41 2023
 
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
-from My_Budget.sql.database import Base
+try:
+    from My_Budget.sql.database import Base
+except:
+    from database import Base
 
 class Entries(Base):
     __tablename__ = 'entries'

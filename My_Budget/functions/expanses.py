@@ -149,8 +149,8 @@ def plot_exp(month=""):
     data = data.sort_values(by="""date_exp""")
 
     data["""date_exp"""] = pd.to_datetime(data["""date_exp"""])
-    data['expanses'] = pd.to_numeric(data['expanses'], downcast='float')
-    
+    data['expanses'] = data['expanses'].astype(float).round(2)
+
     data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
     data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
 

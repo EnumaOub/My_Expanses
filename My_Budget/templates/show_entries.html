@@ -41,6 +41,11 @@
 
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if not session.logged_in %}
+        <i class="fa fa-sign-in" aria-hidden="true"></i>
+        {% else %}
+        <i class="fa fa-sign-out" aria-hidden="true"></i>
+        {% endif %}
         Log In/Out
       </a>
       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">

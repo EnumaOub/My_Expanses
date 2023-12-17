@@ -19,8 +19,8 @@ from My_Budget.functions.groceries import id_gcr, add_grocery, get_grocery
 
 
 
-UPLOAD_FOLDER = r"D:\Learn\Python\backup_android_budget\new"
-ALLOWED_EXTENSIONS = {'csv'}
+UPLOAD_FOLDER = r"D:\Learn\Python\Money"
+ALLOWED_EXTENSIONS = {'csv', 'xls'}
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , flaskr.py
@@ -169,10 +169,12 @@ def show_data():
 ### get file selected
 @app.route('/uploads/<name>')
 def download_file(name):
+    print(name)
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 ### check if its a file we allowed
 def allowed_file(filename):
+    print(filename.rsplit('.', 1)[1].lower())
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -193,28 +195,33 @@ def get_file():
     file_table=None
     try:
         file = request.files['file']
+        print(file)
         show_table = True
         if file.filename != '':
 
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            print(file_path)
             file.save(file_path)
             pd.set_option('display.width', 1000)
             pd.set_option('colheader_justify', 'center')
 
             file_table=read_csv(file_path)
+            if request.form.get('check_exp') == 'Depense':
+                print("File Reading Depenses")
+                dwnl2db_exp(file_path)
+            if  request.form.get('check_inc') == 'Revenu':
+                print("File Reading Revenu")
+                dwnl2db_inc(file_path)
             file_table=[html_style(file_table.to_html(classes='data', header="true"))]
             
-    except:
+    except Exception as error:
+        print("An exception occurred:", error)
         show_table = False
 
-    try:
-        if request.form.get('check_exp') == 'Depense':
-            dwnl2db_exp(file_path)
-        if  request.form.get('check_inc') == 'Revenu':
-            dwnl2db_inc(file_path)
 
-    except:
-        print("PROBLEME READING")
+    
+
+
 
     return render_template('file_read.html', show_table=show_table, file_table=file_table)
 

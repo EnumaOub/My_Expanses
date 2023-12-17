@@ -1,9 +1,16 @@
 import pandas as pd
 import csv
 from sqlalchemy import text
+import numpy as np
 
-from My_Budget.sql.database import db_session, init_db, engine
-from My_Budget.sql.models import Entries, Categories, Budget
+try:
+    from My_Budget.sql.database import db_session, init_db, engine
+    from My_Budget.sql.models import Entries, Categories, Budget
+except:
+    import sys
+    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget\sql')
+    from database import db_session, init_db, engine
+    from models import Entries, Categories, Budget
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -16,8 +23,24 @@ def get_delimiter(path, bytes = 4096):
     return delimiter
 
 def read_csv(path):
-    delimiter = get_delimiter(path)
-    df = pd.read_csv(path,delimiter=delimiter)
+    if ".xls" in path:
+        print('Read xls')
+        df = pd.read_excel(path, skiprows=[0, 1],
+                           usecols=["Date operation",
+                                    "Categorie operation", "Sous Categorie operation",
+                                    "Montant operation"])
+        print()
+        df.columns = ["Date", 'Catégorie 1', 'Remarques', 'Montant']
+        df.loc[df['Catégorie 1'] == "A catégoriser", 'Catégorie 1'] = "Unknown"
+        df['Montant'] = pd.to_numeric(df['Montant'], downcast="float")
+        df['Montant'] = df['Montant'].astype(float).round(2)
+        mask = df['Montant'] < 0
+        df['Revenu'] = df['Montant'].mask(mask).round(2)
+        df['Dépense'] = df['Montant'].mask(~mask).round(2).abs()
+        df = df.fillna("0")
+    else:
+        delimiter = get_delimiter(path)
+        df = pd.read_csv(path,delimiter=delimiter)
     return df
 
 def html_style(df):
@@ -33,9 +56,9 @@ def expanse2db(df):
     res_df["comment"]=df["Remarques"] 
     res_df["expanses"]=df["Dépense"] 
     try:
-        res_df["expanses"]=res_df["expanses"].astype('float')
+        res_df["expanses"]=res_df["expanses"].astype('float').round(2)
     except:
-        res_df["expanses"]=res_df["expanses"].str.replace(',', '.').astype('float')
+        res_df["expanses"]=res_df["expanses"].str.replace(',', '.').astype('float').round(2)
     res_df["date_exp"]=df["Date"] 
     res_df=res_df.rename_axis('id')
     return res_df
@@ -47,9 +70,9 @@ def income2db(df):
     res_df["comment"]=df["Remarques"] 
     res_df["income"]=df["Revenu"] 
     try:
-        res_df["income"]=res_df["income"].astype('float')
+        res_df["income"]=res_df["income"].astype('float').round(2)
     except:
-        res_df["income"]=res_df["income"].str.replace(',', '.').astype('float')
+        res_df["income"]=res_df["income"].str.replace(',', '.').astype('float').round(2)
     res_df["date_exp"]=df["Date"] 
     res_df=res_df.rename_axis('id')
     return res_df
@@ -57,18 +80,17 @@ def income2db(df):
 def send_exp(df, engine=engine):
     print("send expanse")
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
-    with engine.connect() as db:
+    with engine.begin() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
-        df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses))]
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses)) | (~df["date_exp"].isin(sql_df["date_exp"]))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
 def send_inc(df, engine=engine):
     print("send income")
-
     sql = text("""SELECT title, comment, income, "date_exp" FROM entries""")
-    with engine.connect() as db:
+    with engine.begin() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
-        df=df[(~df.comment.isin(sql_df.comment)) | (~df.income.isin(sql_df.income))]
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.income.isin(sql_df.income)) | (~df["date_exp"].isin(sql_df["date_exp"]))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
 def send_inc2(df, engine=engine):
@@ -89,21 +111,18 @@ def send_inc2(df, engine=engine):
 def dwnl2db_inc(path):
     df = read_csv(path)
     inc_df = income2db(df)
+    send_inc(inc_df)
 
 
 def dwnl2db_exp(path):
     df = read_csv(path)
     exp_df = expanse2db(df)
-
+    send_exp(exp_df)
 
 
 if __name__ == "__main__":
-    path = r"D:\Learn\Python\backup_android_budget\Compte Courant-20230620-203137.csv"
+    path = r"D:\Learn\Python\Money\export_17_12_2023_13_09_36.xls"
     df = read_csv(path)
-    #print(html_style(df.to_html(classes="data", header="true")))
-    print(df.columns)
-    rslt_df = df[df['Dépense'] == '0'] 
-    print(rslt_df)
     exp_df = expanse2db(df)
     print(exp_df)
     inc_df = income2db(df)
