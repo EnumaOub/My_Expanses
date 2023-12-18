@@ -17,8 +17,6 @@ from My_Budget.functions.categories import add_categories_from_list, get_all_cat
 from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp
 from My_Budget.functions.groceries import id_gcr, add_grocery, get_grocery
 
-
-
 UPLOAD_FOLDER = r"D:\Learn\Python\Money"
 ALLOWED_EXTENSIONS = {'csv', 'xls'}
 
