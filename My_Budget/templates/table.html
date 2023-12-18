@@ -1,122 +1,206 @@
 <!doctype html>
 <html lang="en-US">
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>My Budget App</title>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    <script>
-    $(function() {
-    $("#tabs").tabs({
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>My Budget App</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script>
+    $(function () {
+      $("#tabs").tabs({
         'ajaxOptions': {
-            'error': function(xhr, status, index, anchor) {
-                $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
-            }
+          'error': function (xhr, status, index, anchor) {
+            $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
+          }
         },
         'spinner': "Loading..."
+      });
     });
-});
-    </script>
-    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script>
-      $(document).ready( function () {
-    $('table.display').DataTable();
-} );
-    </script>
+  </script>
+  <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('table.display').DataTable();
+    });
+  </script>
 
-    <link href="../static/style.css" rel="stylesheet">
-    <script>
+  <link href="../static/style.css" rel="stylesheet">
+  <script>
     $('.dropdown-toggle').dropdown();
-</script>
-  </head>
+  </script>
+</head>
 
-  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-  <body>
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
 
-    <div id="tabs">
-      <ul>
-        <li><a href="#exp">Expenses</a></li>
-        <li><a href="#inc">Incomes</a></li>
-      </ul>
+<body>
+
+  <div id="tabs">
+    <ul>
+      <li><a href="#exp">Expenses</a></li>
+      <li><a href="#inc">Incomes</a></li>
+      <li><a href="#add_exp">Add expenses/incomes</a></li>
+      <li><a href="#del_exp">Delete entries</a></li>
+    </ul>
     <div id="exp">
-        <table class="display table " id="">
-            <thead>
-              <tr>
-                <th scope="col">Categories</th>
-                <th scope="col">Value</th>
-                <th scope="col">Comment</th>
-                <th scope="col">Date</th>
-                <th scope="col">Budget</th>
-                <th scope="col">Delete</th>
-              </tr>
-            </thead>
-            <ul class=entries>
-              <tbody>    
-                {% for entry in entries %}
-                  <tr class="table-primary">
-                        <td>{{ entry.title }}</td>
-                        <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
-                        <td>{{ entry.comment|safe }}</td>
-                        <td>{{ entry.date_exp|safe }}</td>
-                        <td>{{ entry.budget_title|safe }}</td>
-                      <td>
-                          <a href="{{ url_for('del_row', id_val=entry.id) }}"
-                        onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
-                        <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
-                        </button></a>
-                      </td>
-                    </tr>
-                {% else %}
-                  <li><em>No entries here so far</em>
-                {% endfor %}
-              </tbody>
-            </ul>
-          </table>
+      <table class="display table " id="">
+        <thead>
+          <tr>
+            <th scope="col">Categories</th>
+            <th scope="col">Value</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Date</th>
+            <th scope="col">Budget</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <ul class=entries>
+          <tbody>
+            {% for entry in entries %}
+            <tr class="table-primary">
+              <td>{{ entry.title }}</td>
+              <td>{{ entry.expanses }}</i><span>&#8364;</span></td>
+              <td>{{ entry.comment|safe }}</td>
+              <td>{{ entry.date_exp|safe }}</td>
+              <td>{{ entry.budget_title|safe }}</td>
+              <td>
+                <a href="{{ url_for('del_row', id_val=entry.id) }}"
+                  onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
+                  <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
+                  </button></a>
+              </td>
+            </tr>
+            {% else %}
+            <li><em>No entries here so far</em>
+              {% endfor %}
+          </tbody>
+        </ul>
+      </table>
     </div>
     <div id="inc">
       <table class="display table" id="">
-          <thead>
-            <tr>
-              <th scope="col">Categories</th>
-              <th scope="col">Value</th>
-              <th scope="col">Comment</th>
-              <th scope="col">Date</th>
-              <th scope="col">Delete</th>
+        <thead>
+          <tr>
+            <th scope="col">Categories</th>
+            <th scope="col">Value</th>
+            <th scope="col">Comment</th>
+            <th scope="col">Date</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <ul class=incomes>
+          <tbody>
+            {% for val in incomes %}
+            <tr class="table-primary">
+              <td>{{ val.title }}</td>
+              <td>{{ val.income }}</i><span>&#8364;</span></td>
+              <td>{{ val.comment|safe }}</td>
+              <td>{{ val.date_exp|safe }}</td>
+              <td>
+                <a href="{{ url_for('del_row', id_val=val.id) }}"
+                  onclick="return confirm('Do you want to permanently the row {{ val.comment }}?');">
+                  <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
+                  </button></a>
+              </td>
             </tr>
-          </thead>
-          <ul class=incomes>
-            <tbody>    
-              {% for val in incomes %}
-                <tr class="table-primary">
-                      <td>{{ val.title }}</td>
-                      <td>{{ val.income }}</i><span>&#8364;</span></td>
-                      <td>{{ val.comment|safe }}</td>
-                      <td>{{ val.date_exp|safe }}</td>
-                    <td>
-                        <a href="{{ url_for('del_row', id_val=val.id) }}"
-                      onclick="return confirm('Do you want to permanently the row {{ val.comment }}?');">
-                      <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
-                      </button></a>
-                    </td>
-                  </tr>
-              {% else %}
-                <li><em>No entries here so far</em>
+            {% else %}
+            <li><em>No entries here so far</em>
               {% endfor %}
-            </tbody>
-          </ul>
-        </table>
+          </tbody>
+        </ul>
+      </table>
+    </div>
+
+    <div id="add_exp">
+
+
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title mb-0">Entries</h2>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+            <fieldset>
+
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="inc_exp" name="inc_exp" checked="">
+                <label class="form-check-label" for="inc_exp">Incomes/Expanses</label>
+              </div>
+
+              <div class="form-group">
+                <label for="cat" class="form-label mt-4">Choose an expanse category</label>
+                <SELECT class="form-select" id="cat" name="title" class=kd_exp>
+                  {% for k in kd_exp %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+                <a href="/categories">
+                  <button type="button" class="btn btn-primary">MODIFY CATEGORIES</button>
+                </a>
+              </div>
+              <div class="form-group">
+                <label for="expenses" class="form-label mt-4">Value expanse</label>
+                <input type=int class="form-control" id="expenses" name=expanses placeholder="Value">
+              </div>
+              <div class="form-group">
+                <label for="comment" class="form-label mt-4">Comment</label>
+                <dd><textarea class="form-control" id="comment" name=comment cols="3"></textarea>
+              </div>
+              <div class="date-input">
+                <label for="today_date" class="form-label mt-4">Choose a start date:</label><br>
+                <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
+              </div>
+              <div class="form-group">
+                <label for="bdg" class="form-label mt-4">Choose a budget</label>
+                <SELECT class="form-select" id="bdg" name="bdg" class=bdg>
+                  <option value="False" selected disabled hidden>Choose here</option>
+                  {% for k in bdg %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+              </div>
+              <button type="submit" class="btn btn-primary">Store</button>
+            </fieldset>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="del_exp">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title mb-0">Delete Entries</h2>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
+
+            <div class="form-group">
+              <label for="del" class="form-label mt-4">Choose an Entry to delete</label>
+              <SELECT class="form-select" id="del" name="id_data" class=data>
+                {% set n = data.id | length %}
+                {% for k in range(n) %}
+                <OPTION value="{{ data.id[k] }}">{{ data.title[k]}}</option>
+                {% endfor %}
+              </SELECT>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-      <div class="text-center">
-        <a href="../">
-          <button type="button" class="btn btn-primary">Dashboard</button>
-        </a>
-      </div>
+  <div class="text-center">
+    <a href="../">
+      <button type="button" class="btn btn-primary">Dashboard</button>
+    </a>
+  </div>
 
 </body>
-

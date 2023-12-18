@@ -5,8 +5,11 @@ import json
 from sqlalchemy import text
 import plotly.express as px
 import plotly
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import datetime
 import pandas as pd
+from dateutil.relativedelta import *
 
 from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries, Categories, Budget
@@ -120,15 +123,19 @@ def get_expanse(exp_val={}, all=True, date=""):
     return exp_tot
 
 
-def get_total():
+def get_total(month=""):
 
     with engine.connect() as db:
-        data       = pd.read_sql(text("select * from public.entries"), db)
+        data = pd.read_sql(text("""select expanses, "date_exp" from public.entries"""), db)
 
-    
-    today = datetime.date.today()
-    lst_month=today.strftime("%Y-%m-"+"01")
-    ajd = today.strftime("%Y-%m-%d")
+    if month:
+       lst_month = month
+       ajd = str((datetime.datetime.strptime(month, "%Y-%m-%d") + 
+                                                relativedelta(months=+1)).strftime('%Y-%m-%d'))
+    else: 
+        today = datetime.date.today()
+        lst_month=today.strftime("%Y-%m-"+"01")
+        ajd = today.strftime("%Y-%m-%d")
 
     data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
 
@@ -138,6 +145,112 @@ def get_total():
     expanse_tot = data2['expanses'].sum()
 
     return expanse_tot
+
+def plot_exp_month(date):
+    lim = str((datetime.datetime.strptime(date, "%Y-%m-%d") + 
+                                                relativedelta(months=+1)).strftime('%Y-%m-%d'))
+    with engine.connect() as db:
+        data = pd.read_sql(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
+            WHERE expanses is not null
+                AND "date_exp" >= '"""+str(date)+"""'
+                AND "date_exp" < '"""+str(lim)+"""'"""), db)
+
+    keys = data.columns
+    print(keys)
+    data = data.sort_values(by="""date_exp""")
+
+    data["""date_exp"""] = pd.to_datetime(data["""date_exp"""])
+    data['expanses'] = data['expanses'].astype(float).round(2)
+
+    data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
+    data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
+
+    print("data['expanses']")
+    print(data['expanses'])
+
+    fig = px.pie(data, values="expanses", names="title", 
+             labels="title").update_layout(autosize=False, width=600, height=600)
+    
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return graphJSON
+
+
+def plot_all():
+    with engine.connect() as db:
+        data = pd.read_sql(text("select * from public.entries"), db)
+    data["""date_exp"""] = pd.to_datetime(data["""date_exp"""])
+    data['expanses'] = data['expanses'].astype(float).round(2) 
+    data['expanses'] *= -1
+    data['income'] = data['income'].astype(float).round(2)
+
+    data_exp = data[["""date_exp""", 'expanses', 'title']].dropna() 
+    data_inc = data[["""date_exp""", 'income', 'title']].dropna() 
+    print(data_inc)
+
+    fig = go.Figure()
+    fig_bar = go.Figure()
+
+    data_inc["""date_exp"""] = data_inc["""date_exp"""].apply(lambda x: x.strftime('%Y-%m'))
+
+    fig_bar.add_trace(go.Bar(x=data_inc["""date_exp"""], y=data_inc['income'], 
+               name="Income"))
+
+    group_title = data_exp.groupby("title")
+    for name, df in group_title:
+        fig.add_trace(go.Scatter(x=df["""date_exp"""], y=df['expanses'], 
+                   name=str(name), mode="lines+markers"))
+        
+        df["""date_exp"""] = df["""date_exp"""].apply(lambda x: x.strftime('%Y-%m'))
+        
+        fig_bar.add_trace(go.Bar(x=df["""date_exp"""], y=df['expanses'], 
+                   name=str(name),))
+    
+    fig.add_trace(go.Scatter(x=data_inc["""date_exp"""], y=data_inc['income'], 
+               name="Income", mode="lines+markers"))
+    
+    
+
+    fig.update_layout(autosize=False, width=1000, height=600)
+    fig_bar.update_layout(autosize=False, width=1000, height=600, barmode='relative')
+
+    fig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=7,
+                     label="1w",
+                     step="day",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6m",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1y",
+                     step="year",
+                     stepmode="backward"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    )
+)
+    
+
+    fig_tot = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    fig_bar = json.dumps(fig_bar, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    return fig_tot, fig_bar
+
 
 
 def plot_exp(month=""):

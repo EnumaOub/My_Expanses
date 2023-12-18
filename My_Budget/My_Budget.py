@@ -10,9 +10,9 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries, Categories, Budget, Groceries
 
-from My_Budget.functions.expanses import input_id, add_expanse, get_total, get_expanse, plot_exp
+from My_Budget.functions.expanses import input_id, add_expanse, get_total, get_expanse, plot_exp, plot_exp_month, plot_all
 from My_Budget.functions.budget import budget_id, addbudget, get_budget, get_all_bdg
-from My_Budget.functions.incomes import get_income, add_income
+from My_Budget.functions.incomes import get_income, add_income, get_all_inc
 from My_Budget.functions.categories import add_categories_from_list, get_all_cat, update_cat
 from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp
 from My_Budget.functions.groceries import id_gcr, add_grocery, get_grocery
@@ -72,31 +72,43 @@ def logout():
 
     
 #### Dashboard #####
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def show_entries():
     data=input_id() # data for what is to delete id and name
 
     ### Get actual month ###
-    today_date = datetime.today().strftime("%Y-%m-%d")
-    num = datetime.today().month
-    month=calendar.month_abbr[num]
+    try:
+        print(request.form['bdaymonth'])
+        today_date = datetime.today().strftime("%Y-%m")
+        month_year = request.form['bdaymonth'] + "-01"
+        num = datetime.strptime(month_year, "%Y-%m-%d").month
+        month=calendar.month_abbr[num]
+    except Exception as error:
+        print("An exception occurred:", error)
+        today_date = datetime.today().strftime("%Y-%m")
+        month_year = str(datetime.today().strftime("%Y-%m") + "-01")
+        num = datetime.today().month
+        month=calendar.month_abbr[num]
     #############################
 
-    expanse_tot = get_total() # get the total of expanses for the month
-    update_cat() # Update all categories
-    cat_exp = get_all_cat() # get all categories to use for add entries
-    bdg = get_all_bdg() # get all budgets to use for add entries
+    
+    
 
-    entries = get_expanse(all = False, date=str(datetime.today().strftime("%Y%m"))+"01")
-    incomes = get_income(all = False, date=str(datetime.today().strftime("%Y%m"))+"01")
+    expanse_tot = round(get_total(month=month_year),2) # get the total of expanses for the month
+    income_tot = round(get_all_inc(month=month_year), 2)
+    
+    entries = get_expanse(all = False, date=month_year)
+    incomes = get_income(all = False, date=month_year)
     groceries = get_grocery()
     
-    graphJSON=plot_exp(month=month) # get the plot
+    graphJSON = plot_exp_month(month_year) # get the plot
+    fig_tot, fig_bar = plot_all()
 
     return render_template('show_entries.html', graphJSON=graphJSON, data=data,
-                            expanse_tot=round(expanse_tot,2), kd_exp=cat_exp,
-                              today_date=today_date, month=month, bdg=bdg,
-                              entries=entries, incomes=incomes, groceries = groceries)
+                            expanse_tot=expanse_tot, income_tot=income_tot,
+                              today_date=today_date, month=month,
+                              entries=entries, incomes=incomes, groceries = groceries,
+                              fig_tot=fig_tot, fig_bar=fig_bar)
 
 ### Called when we add an entry
 @app.route('/add', methods=['POST'])
@@ -117,7 +129,7 @@ def add_entry():
     else:
         print("INCOMES")
         add_income()
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_data'))
 
 
 
@@ -132,7 +144,7 @@ def del_entry():
     Entries.query.filter_by(id=int(select)).delete() # delete row by the id
     db_session.commit()
     
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_data'))
 
 #########################################
 ############ DATA_SHOW ##################
@@ -158,8 +170,14 @@ def show_data():
 
     entries = get_expanse()
     incomes = get_income()
+    update_cat() # Update all categories
+    cat_exp = get_all_cat() # get all categories to use for add entries
+    bdg = get_all_bdg() # get all budgets to use for add entries
+    data=input_id() # data for what is to delete id and name
 
-    return render_template('table.html', entries=entries, incomes=incomes)
+
+    return render_template('table.html', entries=entries, incomes=incomes,
+                           kd_exp=cat_exp, bdg=bdg, data=data)
 
 #########################################
 ############ FILE_READING ###############

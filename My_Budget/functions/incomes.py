@@ -10,6 +10,7 @@ import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
+from dateutil.relativedelta import *
 
 from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries, Categories, Budget
@@ -106,6 +107,29 @@ def get_total():
     with engine.connect() as db:
         expanse_tot = db.execute(text("""SELECT SUM(income) FROM public.entries """)).first()[0]
     return expanse_tot
+
+def get_all_inc(month=""):
+
+    with engine.connect() as db:
+        data = pd.read_sql(text("""select income, "date_exp" from public.entries"""), db)
+
+    if month:
+       lst_month = month
+       ajd = str((datetime.strptime(month, "%Y-%m-%d") + 
+                                                relativedelta(months=+1)).strftime('%Y-%m-%d'))
+    else: 
+        today = datetime.date.today()
+        lst_month=today.strftime("%Y-%m-"+"01")
+        ajd = today.strftime("%Y-%m-%d")
+
+    data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
+
+    data2 = data.loc[(data["""date_exp"""] >= lst_month)
+                     & (data["""date_exp"""] < ajd)]
+
+    income_tot = data2['income'].sum()
+
+    return income_tot
 
 
 def plot_inc(month=""):
