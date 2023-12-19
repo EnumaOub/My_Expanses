@@ -82,7 +82,7 @@ def send_exp(df, engine=engine):
     sql = text("""SELECT title, comment, expanses, "date_exp" FROM entries""")
     with engine.begin() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
-        df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses)) | (~df["date_exp"].isin(sql_df["date_exp"]))]
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.expanses.isin(sql_df.expanses))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
 def send_inc(df, engine=engine):
@@ -90,7 +90,7 @@ def send_inc(df, engine=engine):
     sql = text("""SELECT title, comment, income, "date_exp" FROM entries""")
     with engine.begin() as db:
         sql_df = pd.read_sql(sql=sql, con=db)
-        df=df[(~df.comment.isin(sql_df.comment)) | (~df.income.isin(sql_df.income)) | (~df["date_exp"].isin(sql_df["date_exp"]))]
+        df=df[(~df.comment.isin(sql_df.comment)) | (~df.income.isin(sql_df.income))]
         df.to_sql('entries', con=db, if_exists='append', index=False)
 
 def send_inc2(df, engine=engine):

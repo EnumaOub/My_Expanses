@@ -41,14 +41,16 @@ def get_budget(bdg_val={}, all=True):
     bdg_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("""SELECT name, title, value FROM public.budget 
+            tot = db.execute(text("""SELECT id, name, title, value FROM public.budget 
             WHERE value is not null""")).fetchall()
-
+            
+            bdg = {"id": None, "name": None, "title": None, "value": None}
             for val in tot:
-                bdg = {"name": None, "title": None, "value": None}
-                bdg["name"] = val[0]
-                bdg["title"]=val[1]
-                bdg["value"]=val[2]
+                
+                bdg["id"] = val[0]
+                bdg["name"] = val[1]
+                bdg["title"]=val[2]
+                bdg["value"]=val[3]
 
                 bdg_tot.append(bdg)
     else:

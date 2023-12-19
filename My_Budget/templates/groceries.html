@@ -106,7 +106,7 @@
               <td>{{ entry.budget_title|safe }}</td>
               <td>{{ entry.date_exp|safe }}</td>
               <td>
-                <a href="{{ url_for('send_gcr', id_gcr=entry.id, title=entry.title,
+                <a href="{{ url_for('groceries.send_gcr', id_gcr=entry.id, title=entry.title,
                       expanse=entry.expanse, comment=entry.comment, budget_title=entry.budget_title, 
                       date_exp=entry.date_exp) }}"
                   onclick="return confirm('Do you want to add the row {{ entry.comment }}?');">
@@ -114,7 +114,7 @@
                   </button></a>
               </td>
               <td>
-                <a href="{{ url_for('del_gcr', id_gcr=entry.id) }}"
+                <a href="{{ url_for('groceries.del_gcr', id_gcr=entry.id) }}"
                   onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
                   <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                   </button></a>
@@ -134,7 +134,7 @@
           <h2 class="card-title mb-0">Entries</h2>
         </div>
         <div class="card-body">
-          <form action="{{ url_for('add_gcr') }}" method=post class=add-entry>
+          <form action="{{ url_for('groceries.add_gcr') }}" method=post class=add-entry>
             <fieldset>
               <div class="form-group">
                 <label for="cat" class="form-label mt-4">Choose a category</label>

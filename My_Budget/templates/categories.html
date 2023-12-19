@@ -52,7 +52,7 @@
       <li><a href="#del">Delete Category</a></li>
     </ul>
     <div id="add">
-      <form action="{{ url_for('add_cat') }}" method=post class=add-cat>
+      <form action="{{ url_for('categories.add_cat') }}" method=post class=add-cat>
         <div class="form-group">
           <label for="cat" class="form-label mt-4" style="color:white">Category name</label>
           <input type=int class="form-control" id="cat" name=cat placeholder="category">
@@ -74,7 +74,7 @@
             <tr class="table-primary">
               <td>{{ entry.name }}</td>
               <td>
-                <a href="{{ url_for('del_cat', id_val=entry.id) }}"
+                <a href="{{ url_for('categories.del_cat', id_val=entry.id) }}"
                   onclick="return confirm('Do you want to permanently the row {{ entry.name }}?');">
                   <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                   </button></a>

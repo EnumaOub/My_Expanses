@@ -52,9 +52,9 @@
       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
         <h6 class="collapse-header">Admin:</h6>
         {% if not session.logged_in %}
-        <a class="collapse-item" href="{{ url_for('login') }}">Log In</a>
+        <a class="collapse-item" href="{{ url_for('login.login') }}">Log In</a>
         {% else %}
-        <a class="collapse-item" href="{{ url_for('logout') }}">Logout</a>
+        <a class="collapse-item" href="{{ url_for('login.logout') }}">Logout</a>
         {% endif %}
       </div>
     </li>
@@ -164,7 +164,7 @@
           <!-- Topbar -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-            <form action="{{ url_for('show_entries') }}" method=post class=add-entry>
+            <form action="{{ url_for('home.show_entries') }}" method=post class=add-entry>
               <label for="bdaymonth">Choose Month and Year:</label>
               <input type="month" id="bdaymonth" name="bdaymonth" value="{{ today_value }}" {{ today_value }}>
               <button type="submit" class="btn btn-primary">Sel Month</button>

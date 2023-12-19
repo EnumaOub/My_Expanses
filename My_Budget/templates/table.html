@@ -68,7 +68,7 @@
               <td>{{ entry.date_exp|safe }}</td>
               <td>{{ entry.budget_title|safe }}</td>
               <td>
-                <a href="{{ url_for('del_row', id_val=entry.id) }}"
+                <a href="{{ url_for('table.del_row', id_val=entry.id) }}"
                   onclick="return confirm('Do you want to permanently delete the row {{ entry.comment }}?');">
                   <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                   </button></a>
@@ -101,7 +101,7 @@
               <td>{{ val.comment|safe }}</td>
               <td>{{ val.date_exp|safe }}</td>
               <td>
-                <a href="{{ url_for('del_row', id_val=val.id) }}"
+                <a href="{{ url_for('table.del_row', id_val=val.id) }}"
                   onclick="return confirm('Do you want to permanently the row {{ val.comment }}?');">
                   <button type="button" class="btn btn-sm btn-outline-danger">Delete</span>
                   </button></a>
@@ -124,7 +124,7 @@
           <h2 class="card-title mb-0">Entries</h2>
         </div>
         <div class="card-body">
-          <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+          <form action="{{ url_for('table.add_entry') }}" method=post class=add-entry>
             <fieldset>
 
               <div class="form-check form-switch">
@@ -178,7 +178,7 @@
           <h2 class="card-title mb-0">Delete Entries</h2>
         </div>
         <div class="card-body">
-          <form action="{{ url_for('del_entry') }}" method=post class=del-entry>
+          <form action="{{ url_for('table.del_entry') }}" method=post class=del-entry>
 
             <div class="form-group">
               <label for="del" class="form-label mt-4">Choose an Entry to delete</label>

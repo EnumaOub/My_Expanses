@@ -253,7 +253,7 @@ def plot_all():
 
 
 
-def plot_exp(month=""):
+def plot_exp():
     with engine.connect() as db:
         data = pd.read_sql(text("select * from public.entries"), db)
 

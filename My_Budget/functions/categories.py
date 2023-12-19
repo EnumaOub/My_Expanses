@@ -46,7 +46,8 @@ def add_categories_from_list(lst_cat):
     for k in lst_cat:
         try:
             cat= str(k)
-        except:
+        except Exception as error:
+            print(error)
             print("Can't convert into string")
             print(k)
         categ["name"] = cat
