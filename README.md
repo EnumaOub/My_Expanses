@@ -14,17 +14,28 @@ JQuery to add dynamic tables
 
 ## 	:desktop_computer: UI
 
-We have an homepage as a dashboard showing the month expanses as well as an historic on another tab.
+We have an homepage as a dashboard showing the month expanses.
 We can observe a set of random expanses and incomes.
 
+### Home Dashboard
 ![Home Dashboard](.github/image/Homepage.gif)
 
+There is an additional tab to show an historic of expanses incomes.
+
+### Home Historic
 ![Home History](.github/image/Homepage2.gif)
 
 We have several link to other page allowing the addition of a budget, expanses, incomes, a grocery which can be added to the list of expanses.
 
+### Home Expanses
 ![Expanses](.github/image/expanses.png)
 
+The next one allow me to read my bank statement to not have to write all my expanses by hand.
+
+### Home Read File
 ![Read File Bank](.github/image/read_file.png)
 
-![Budget](.github/image/read_file.png)
+Create a Budget to aassociate with expanse.
+
+### Budget
+![Budget](.github/image/budget.png)
