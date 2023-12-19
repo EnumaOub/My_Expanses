@@ -1,20 +1,20 @@
 # :bar_chart: Budget App
-First application Flask which I want to evolve into an application to keep an eye on my budget.
-It is mostly used for my expanses which is not easily use by another user.
-
+First application Flask which I want to evolve into an application to keep an eye on my budget.\
+It is mostly used for my expanses which is not easily use by another user.\
+\
 Firstly based on https://flask.palletsprojects.com/en/0.12.x/tutorial/introduction/
 
 ## :hammer_and_wrench: Learned
 
-Flask: a micro web framework written in Python.
-SQL/Postgre: to stock all data
-
-CSS style: https://startbootstrap.com/theme/sb-admin-2
-JQuery to add dynamic tables
+Flask: a micro web framework written in Python.\
+SQL/Postgre: to stock all data\
+\
+CSS style: https://startbootstrap.com/theme/sb-admin-2\
+JQuery to add dynamic tables\
 
 ## 	:desktop_computer: UI
 
-We have an homepage as a dashboard showing the month expanses.
+We have an homepage as a dashboard showing the month expanses.\
 We can observe a set of random expanses and incomes.
 
 ### Dashboard
