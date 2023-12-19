@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  8 20:14:41 2023
-
-@author: rayan
-"""
-
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
 try:
