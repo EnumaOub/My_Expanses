@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime 
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -14,17 +14,22 @@ from dateutil.relativedelta import *
 
 from My_Budget.sql.database import db_session, init_db, engine
 from My_Budget.sql.models import Entries
+from My_Budget.functions.account import get_taux
 
 
 def add_income():
-    inc = {"title": None, "comment": None, "income": None, "date_exp": None}
+    inc = {"title": None, "comment": None, "expanses": None, 
+               "date_exp": None, "account": "Courant", "taux": 0}
 
     inc["title"] = request.form['title']
     inc["comment"] = request.form['comment']
     inc["income"] = request.form['expanses']
     inc["date_exp"] = request.form['date_exp']
+    inc["account"] = request.form['account']
+    inc["taux"] = get_taux(request.form['account'])
 
-    e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], date_exp=inc["date_exp"])
+    e = Entries(title=inc["title"], comment=inc["comment"], income=inc["income"], 
+                date_exp=inc["date_exp"], account=inc["account"], taux=inc["taux"])
     
     db_session.add(e)
     db_session.commit()
@@ -34,6 +39,17 @@ def add_solde():
     db_session.add(e)
     db_session.commit()
 
+def get_solde():
+    print("GET SOLDE")
+    sql_txt = text("""SELECT DISTINCT ON ("date_exp") solde FROM public.entries
+                    WHERE  solde IS NOT NULL
+                    ORDER  BY "date_exp" DESC""")
+    with engine.begin() as db:
+        solde = db.execute(sql_txt)
+        for val in solde:
+            solde_val = val[0]
+    return solde_val
+    
 
 def add_income_db(df):
     inc = {"title": None, "comment": None, "income": None, "date_exp": None}
@@ -54,7 +70,7 @@ def input_id():
         idd = db.execute(text("""SELECT id FROM public.entries """))
         id_val=[]
         comment_val=[]
-        for (idd_v , comment_v )in zip(idd, comment):
+        for (idd_v , comment_v) in zip(idd, comment):
             id_val.append(idd_v[0])
             comment_val.append(comment_v[0])
             data2.append([idd_v[0], comment_v[0]])
@@ -65,13 +81,14 @@ def input_id():
 
     return data
 
-def get_income(inc_val={}, all=True, date=""):
+def get_income(account="Courant", inc_val={}, all=True, date=""):
     
     inc_tot =[]
     if all:
         with engine.connect() as db:
             tot = db.execute(text("""SELECT id, title, comment, income, "date_exp" FROM public.entries 
-            WHERE income is not null""")).fetchall()
+            WHERE income is not nulll
+                                AND account='"""+account+"""'""")).fetchall()
 
             for val in tot:
                 inc = {"id": None,"title": None, "comment": None, "income": None, "date_exp": None}
@@ -86,7 +103,8 @@ def get_income(inc_val={}, all=True, date=""):
         with engine.connect() as db:
             tot = db.execute(text("""SELECT id, title, comment, income, "date_exp" FROM public.entries 
             WHERE income is not null
-                AND "date_exp" >= '"""+str(date)+"""'""")).fetchall()
+                AND "date_exp" >= '"""+str(date)+"""'
+                                AND account='"""+account+"""'""")).fetchall()
 
             for val in tot:
                 inc = {"id": None,"title": None, "comment": None, "income": None, "date_exp": None}
@@ -100,7 +118,7 @@ def get_income(inc_val={}, all=True, date=""):
     
     else:
         if bool(inc_val):
-            with engine.connect() as db:
+            with engine.begin() as db:
                 inc_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
                                     title = :title AND comment = :comment AND income = :income AND date_exp = :date_exp AND income is not null"""),
                                       {"id": inc_val["id"],"title": inc_val["title"], "comment": inc_val["comment"], "income": inc_val["income"],
@@ -110,24 +128,25 @@ def get_income(inc_val={}, all=True, date=""):
 
 
 def get_total():
-    with engine.connect() as db:
+    with engine.begin() as db:
         expanse_tot = db.execute(text("""SELECT SUM(income) FROM public.entries """)).first()[0]
     return expanse_tot
 
-def get_all_inc(month=""):
+def get_all_inc(account="Courant",month=""):
 
-    with engine.connect() as db:
-        data = pd.read_sql(text("""select income, "date_exp" from public.entries"""), db)
+    with engine.begin() as db:
+        data = pd.read_sql(text("""select income, "date_exp", account from public.entries"""), db)
 
     if month:
        lst_month = month
-       ajd = str((datetime.strptime(month, "%Y-%m-%d") + 
+       ajd = str((datetime.datetime.strptime(month, "%Y-%m-%d") + 
                                                 relativedelta(months=+1)).strftime('%Y-%m-%d'))
     else: 
-        today = datetime.date.today()
+        today = datetime.datetime.date.today()
         lst_month=today.strftime("%Y-%m-"+"01")
         ajd = today.strftime("%Y-%m-%d")
 
+    data = data[data["account"]==account]
     data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
 
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
@@ -139,7 +158,7 @@ def get_all_inc(month=""):
 
 
 def plot_inc(month=""):
-    with engine.connect() as db:
+    with engine.begin() as db:
         data       = pd.read_sql(text("select * from public.entries"), db)
         data_exp       = pd.read_sql(text(""" SELECT SUM(income) AS income, "date_exp"
                                             FROM public.entries WHERE income is not null
@@ -152,13 +171,12 @@ def plot_inc(month=""):
     data = data.sort_values(by="""date_exp""")
     data_exp = data_exp.sort_values(by="""date_exp""")
 
-    today = datetime.date.today()
+    today = datetime.datetime.date.today()
     lst_month=today.strftime("01"+"/%m/%Y")
     ajd = today.strftime("%d/%m/%Y")
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
                      & (data["""date_exp"""] < ajd)]
     figure1 = px.bar(y=data2["income"], x=data2["title"], color=data2["title"])
-    print(data2)
     # For as many traces that exist per Express figure, get the traces from each plot and store them in an array.
     # This is essentially breaking down the Express fig into it's traces
     figure1_traces = []

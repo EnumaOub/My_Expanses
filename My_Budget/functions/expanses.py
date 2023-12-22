@@ -12,7 +12,9 @@ import pandas as pd
 from dateutil.relativedelta import *
 
 from My_Budget.sql.database import db_session, init_db, engine
-from My_Budget.sql.models import Entries, Categories, Budget
+from My_Budget.sql.models import Entries
+
+from My_Budget.functions.account import get_taux
 
 
 def add_expanse(grocery=[]):
@@ -22,12 +24,17 @@ def add_expanse(grocery=[]):
         db_session.commit()
 
     else:
-        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+        exp = {"title": None, "comment": None, "expanses": None, 
+               "date_exp": None, "account": "Courant", "taux": 0}
         exp["title"] = request.form['title']
         exp["comment"] = request.form['comment']
         exp["expanses"] = request.form['expanses']
         exp["date_exp"] = request.form['date_exp']
-        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+        exp["account"] = request.form['account']
+        exp["taux"] = get_taux(request.form['account'])
+
+        e = Entries(title=exp["title"], comment=exp["comment"], expanses=exp["expanses"],
+                     date_exp=exp["date_exp"], account=exp["account"], taux=exp["taux"])
         db_session.add(e)
         db_session.commit()
 
@@ -62,13 +69,14 @@ def input_id():
 
     return data
 
-def get_expanse(exp_val={}, all=True, date=""):
+def get_expanse(account="Courant", exp_val={}, all=True, date=""):
     
     exp_tot =[]
     if all:
         with engine.connect() as db:
             tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
-            WHERE expanses is not null""")).fetchall()
+                                WHERE expanses is not null
+                                AND account='"""+account+"""'""")).fetchall()
 
             for val in tot:
                 exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
@@ -83,7 +91,8 @@ def get_expanse(exp_val={}, all=True, date=""):
         with engine.connect() as db:
             tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
             WHERE expanses is not null
-                AND "date_exp" >= '"""+str(date)+"""'""")).fetchall()
+                AND "date_exp" >= '"""+str(date)+"""'
+                AND account='"""+account+"""'""")).fetchall()
 
             for val in tot:
                 exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
@@ -107,10 +116,10 @@ def get_expanse(exp_val={}, all=True, date=""):
     return exp_tot
 
 
-def get_total(month=""):
+def get_total(account="Courant", month=""):
 
     with engine.connect() as db:
-        data = pd.read_sql(text("""select expanses, "date_exp" from public.entries"""), db)
+        data = pd.read_sql(text("""select expanses, "date_exp", account from public.entries"""), db)
 
     if month:
        lst_month = month
@@ -120,7 +129,8 @@ def get_total(month=""):
         today = datetime.date.today()
         lst_month=today.strftime("%Y-%m-"+"01")
         ajd = today.strftime("%Y-%m-%d")
-
+    
+    data = data[data["account"]==account]
     data["""date_exp"""]= pd.to_datetime(data["""date_exp"""])
 
     data2 = data.loc[(data["""date_exp"""] >= lst_month)
@@ -134,15 +144,16 @@ def get_exp_month(date):
     lim = str((datetime.datetime.strptime(date, "%Y-%m-%d") + 
                                                 relativedelta(months=+1)).strftime('%Y-%m-%d'))
     with engine.connect() as db:
-        data = pd.read_sql(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
+        data = pd.read_sql(text("""SELECT id, title, comment, expanses, "date_exp", account FROM public.entries 
             WHERE expanses is not null
                 AND "date_exp" >= '"""+str(date)+"""'
                 AND "date_exp" < '"""+str(lim)+"""'"""), db)
     return data
 
 
-def plot_exp_month(date):
+def plot_exp_month(date, account):
     data = get_exp_month(date)
+    data = data[data["account"]==account]
 
     keys = data.columns
     print(keys)
@@ -154,8 +165,6 @@ def plot_exp_month(date):
     data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
     data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
 
-    print("data['expanses']")
-    print(data['expanses'])
 
     fig = px.pie(data, values="expanses", names="title", 
              labels="title").update_layout(autosize=False, width=600, height=600)
@@ -176,7 +185,6 @@ def plot_all():
 
     data_exp = data[["""date_exp""", 'expanses', 'title']].dropna() 
     data_inc = data[["""date_exp""", 'income', 'title']].dropna() 
-    print(data_inc)
 
     fig = go.Figure()
     fig_bar = go.Figure()
@@ -255,9 +263,6 @@ def plot_exp():
 
     data['date'] = pd.to_datetime(data["""date_exp"""]).dt.to_period('M').astype('datetime64[ns]')
     data['month'] = data.date.sort_values(ascending=False).dt.to_period('M')
-
-    print("data['expanses']")
-    print(data['expanses'])
 
     figs = {
     c: px.pie(data.loc[data['month']==c], values="expanses", names="title", 

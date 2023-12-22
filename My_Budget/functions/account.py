@@ -68,7 +68,7 @@ def get_all_acc(lst = True):
     
     cat_tot = []
     cat_comp = []
-    with engine.connect() as db:
+    with engine.begin() as db:
         tot = db.execute(text("SELECT id, account, taux FROM public.account")).fetchall()
         for val in tot:
             categ = {"id": None, "account": None, "taux": None}
@@ -82,8 +82,17 @@ def get_all_acc(lst = True):
     else:
         return cat_comp
    
+def get_taux(account):
+    sql_txt = text("""SELECT account, taux FROM public.account
+                   WHERE account is not NULL """)
+    with engine.begin() as db:
+        taux_tot = pd.read_sql(sql=sql_txt, con=db)
+        taux = taux_tot[taux_tot["account"]==account]["taux"]
+        taux = round(float(taux), 2)
+    return taux
 
 if __name__ == "__main__":
     print()
+
 
 

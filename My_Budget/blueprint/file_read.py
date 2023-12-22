@@ -10,6 +10,7 @@ from flask import current_app
 ALLOWED_EXTENSIONS = {'csv', 'xls'}
 
 from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp, delentrie
+from My_Budget.functions.account import get_all_acc, update_acc
 
 file = Blueprint('file', __name__,
                         template_folder='templates')
@@ -36,6 +37,7 @@ def allowed_file(filename):
 ### read and show csv
 @file.route('/file_add', methods=['POST'])
 def get_path():
+    print("DELETE TABLE ENTRIES")
     if not session.get('logged_in'):
         abort(401)
     
@@ -45,10 +47,11 @@ def get_path():
 ### read and show csv
 @file.route('/file_del', methods=['POST'])
 def del_all():
+    print("DELETE TABLE ENTRIES")
     if not session.get('logged_in'):
         abort(401)
     
-    delentrie() # Read file
+    delentrie() # Delete Database
     return redirect(url_for('file.get_file'))
 
 
@@ -56,6 +59,8 @@ def del_all():
 @file.route('/file_read', methods=['GET', 'POST'])
 def get_file():
     print("FILE READ")
+    update_acc()
+    accounts = get_all_acc()
     
     file_table=None
     try:
@@ -83,4 +88,5 @@ def get_file():
         print("An exception occurred:", error)
         show_table = False
 
-    return render_template('file_read.html', show_table=show_table, file_table=file_table)
+    return render_template('file_read.html', show_table=show_table, file_table=file_table,
+                           accounts=accounts)

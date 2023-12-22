@@ -7,6 +7,7 @@ from My_Budget.sql.models import Entries
 from My_Budget.functions.expanses import input_id, add_expanse, get_expanse
 from My_Budget.functions.incomes import get_income, add_income
 from My_Budget.functions.categories import get_all_cat, update_cat
+from My_Budget.functions.account import get_all_acc, update_acc
 
 
 table = Blueprint('table', __name__,
@@ -71,11 +72,13 @@ def show_data():
     entries = get_expanse()
     incomes = get_income()
     update_cat() # Update all categories
+    update_acc()
+    accounts = get_all_acc()
     cat_exp = get_all_cat() # get all categories to use for add entries
     data=input_id() # data for what is to delete id and name
 
 
     return render_template('table.html', entries=entries, incomes=incomes,
-                           kd_exp=cat_exp,  data=data)
+                           kd_exp=cat_exp,  data=data, accounts=accounts)
 
 

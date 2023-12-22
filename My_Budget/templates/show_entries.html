@@ -124,16 +124,16 @@
     <div id="bdg">
       <div class="container-fluid">
         <div class="row">
-            <div class="card-body">
-              <div id='chart_bdg' class='chart'>
-                <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-                <script>
-                  var graphs_bdg = {{ fig_bdg | safe}};
-                  Plotly.plot('chart_bdg', graphs_bdg, {});
-                </script>
-              </div>
+          <div class="card-body">
+            <div id='chart_bdg' class='chart'>
+              <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+              <script>
+                var graphs_bdg = {{ fig_bdg | safe}};
+                Plotly.plot('chart_bdg', graphs_bdg, {});
+              </script>
             </div>
           </div>
+        </div>
       </div>
     </div>
 
@@ -144,30 +144,30 @@
 
         <!-- Content Row -->
         <div class="row">
-            <div class="card-body">
-              <div id='chart_bar' class='chart'>
-                <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-                <script>
-                  var graphs_bar = {{ fig_bar | safe}};
-                  Plotly.plot('chart_bar', graphs_bar, {});
-                </script>
-              </div>
+          <div class="card-body">
+            <div id='chart_bar' class='chart'>
+              <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+              <script>
+                var graphs_bar = {{ fig_bar | safe}};
+                Plotly.plot('chart_bar', graphs_bar, {});
+              </script>
             </div>
           </div>
-          
-            <div class="row">
-            <div class="card-body">
-              <div id='chart_tot' class='chart'>
-                <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-                <script>
-                  var graphs_tot = {{ fig_tot | safe}};
-                  Plotly.plot('chart_tot', graphs_tot, {});
-                </script>
-              </div>
+        </div>
+
+        <div class="row">
+          <div class="card-body">
+            <div id='chart_tot' class='chart'>
+              <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+              <script>
+                var graphs_tot = {{ fig_tot | safe}};
+                Plotly.plot('chart_tot', graphs_tot, {});
+              </script>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
     <div id="dash">
       <div id="content-wrapper" class="d-flex flex-column">
@@ -177,17 +177,22 @@
 
           <!-- Topbar -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <h1 class="h3 mb-0 text-gray-800">Solde: {{ solde }}</h1>
             <a href="/solde">
               <button type="button" class="btn btn-primary">Add Solde</button>
-          </a>
-          <a href="/account">
-            <button type="button" class="btn btn-primary">Add Account</button>
-        </a>
+            </a>
             <form action="{{ url_for('home.show_entries') }}" method=post class=add-entry>
+              <div class="form-group">
+                <label for="account" class="form-label mt-4">Choose an Account</label>
+                <SELECT class="form-select" id="account" name="account" class=account>
+                  {% for k in accounts %}
+                  <OPTION value="{{ k }}">{{ k }}</option>
+                  {% endfor %}
+                </SELECT>
+              </div>
               <label for="bdaymonth">Choose Month and Year:</label>
               <input type="month" id="bdaymonth" name="bdaymonth" value="{{ today_value }}" {{ today_value }}>
-              <button type="submit" class="btn btn-primary">Sel Month</button>
+              <button type="submit" class="btn btn-primary">Apply New Data</button>
             </form>
 
           </div>

@@ -7,11 +7,13 @@ import xlrd
 try:
     from My_Budget.sql.database import db_session, init_db, engine
     from My_Budget.sql.models import Entries, Categories, Budget
+    from My_Budget.functions.account import get_taux
 except:
     import sys
-    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget\sql')
-    from database import db_session, init_db, engine
-    from models import Entries, Categories, Budget
+    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget')
+    from sql.database import db_session, init_db, engine
+    from sql.models import Entries, Categories, Budget
+    from functions.account import get_taux
 
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -43,6 +45,8 @@ def read_csv(path):
     else:
         delimiter = get_delimiter(path)
         df = pd.read_csv(path,delimiter=delimiter)
+    df["account"] = request.form['account']
+    df["taux"] = get_taux(request.form['account'])
     return df
 
 def html_style(df):
@@ -61,8 +65,8 @@ def getsolde(path):
         db_session.commit()
 
 def delentrie():
-    with engine.connect() as db:
-        db.execute(text("""DELETE FROM public.entries"""))
+    with engine.begin() as db:
+        db.execute(text("""TRUNCATE TABLE public.entries"""))
 
 def expanse2db(df):
     res_df = pd.DataFrame()
@@ -124,6 +128,7 @@ def send_inc2(df, engine=engine):
         db_session.commit()
 
 def dwnl2db_inc(path):
+    getsolde(path)
     df = read_csv(path)
     inc_df = income2db(df)
     send_inc(inc_df)

@@ -101,7 +101,7 @@ def plot_bdg_month(date):
     for bdg in bdg_data:
         name = bdg["title"]
         val_bdg = bdg["value"]
-        val_exp = expanses[expanses['comment']==name]["expanses"].count()
+        val_exp = expanses[expanses['title']==name]["expanses"].sum()
         percent = round((val_exp/val_bdg)*100, 2)
         fig.add_trace(go.Bar(x=[name], y=[percent], 
                    name=str(name)))

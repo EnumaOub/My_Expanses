@@ -45,20 +45,31 @@
     <p><input type="file" name="file"></p>
     <p><input type="submit" value="Submit"></p>
     <h2>Send to Database</h2>
+    <div class="form-group">
+      <label for="account" class="form-label mt-4">Choose an Account</label>
+      <SELECT class="form-select" id="account" name="account" class=account>
+        {% for k in accounts %}
+        <OPTION value="{{ k }}">{{ k }}</option>
+        {% endfor %}
+      </SELECT>
+      <a href="/account">
+        <button type="button" class="btn btn-primary">MODIFY ACCOUNT</button>
+      </a>
+    </div>
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="Depense" id="check_exp" name="check_exp">
+      <input class="form-check-input" type="checkbox" value="Depense" id="check_exp" name="check_exp" checked="">
       <label class="form-check-label" for="check_exp">
         Depense
       </label>
     </div>
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="Revenu" id="check_inc" name="check_inc">
+      <input class="form-check-input" type="checkbox" value="Revenu" id="check_inc" name="check_inc" checked="">
       <label class="form-check-label" for="check_inc">
         Revenu
       </label>
     </div>
   </form>
-  <form action="{{ url_for('file.dell_all') }}" method=post class=add-entry>
+  <form action="{{ url_for('file.del_all') }}" method=post class=add-entry>
       <button type="submit" class="btn btn-danger">DEL</button>
   </form>
 

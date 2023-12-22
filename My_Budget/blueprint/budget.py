@@ -45,7 +45,6 @@ def add_budget():
 ### Delete an entry for the budget by id
 @budget.route('/budget/del_row_bdg/<id_val>')
 def del_row_bdg(id_val=None):
-    print("TESTTT")
     if not session.get('logged_in'):
         abort(401)
     
