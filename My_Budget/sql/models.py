@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Boolean
 from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
 try:
     from My_Budget.sql.database import Base
@@ -15,9 +15,15 @@ class Entries(Base):
     income = Column(DOUBLE_PRECISION, unique=True)
     result = Column(DOUBLE_PRECISION, unique=True)
     budget_title = Column(String(50), unique=True)
+    account = Column(String(50), unique=True)
+    solde = Column(DOUBLE_PRECISION, unique=True)
+    taux = Column(DOUBLE_PRECISION, unique=True)
 
 
-    def __init__(self, title=None, comment=None, expanses=None, date_exp=None, income=None, result=None, budget_title=None):
+
+    def __init__(self, title=None, comment=None, expanses=None, 
+                 date_exp=None, income=None, result=None, 
+                 budget_title=None, account="Courant", solde=None, taux=0):
         self.title = title
         self.comment = comment
         self.expanses = expanses
@@ -25,6 +31,9 @@ class Entries(Base):
         self.income = income
         self.result = result
         self.budget_title = budget_title
+        self.account = account
+        self.solde = solde
+        self.taux = taux
 
     def __repr__(self):
         return '<Title %r>' % (self.title)
@@ -35,12 +44,14 @@ class Budget(Base):
     name = Column(String(50), unique=True)
     title = Column(String(120), unique=True)
     value = Column(DOUBLE_PRECISION, unique=True)
+    monthly = Column(Boolean, unique=True)
 
 
-    def __init__(self, name=None, title=None, value=None):
+    def __init__(self, name=None, title=None, value=None, monthly=False):
         self.name = name
         self.title = title
         self.value = value
+        self.monthly = monthly
 
     def __repr__(self):
         return '<Title %r>' % (self.title) 
@@ -78,3 +89,19 @@ class Groceries(Base):
 
     def __repr__(self):
         return '<Title %r>' % (self.title)
+    
+class Account(Base):
+    __tablename__ = 'account'
+    id = Column(Integer, primary_key=True)
+    account = Column(String(50), unique=True)
+    taux = Column(DOUBLE_PRECISION, unique=True)
+    
+
+    def __init__(self, account="Courant", taux=0):
+        self.account = account
+        self.taux = taux
+
+
+
+    def __repr__(self):
+        return '<Name %r>' % (self.account)

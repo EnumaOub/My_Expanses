@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My Budget App</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#tabs").tabs({
+                'ajaxOptions': {
+                    'error': function (xhr, status, index, anchor) {
+                        $(anchor.hash).html("Couldn't load this tab. We'll try to fix this as soon as possible.");
+                    }
+                },
+                'spinner': "Loading..."
+            });
+        });
+    </script>
+    <script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('table.display').DataTable();
+        });
+    </script>
+
+    <link href="../static/style.css" rel="stylesheet">
+    <script>
+        $('.dropdown-toggle').dropdown();
+    </script>
+</head>
+
+<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+
+<body>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title mb-0">Solde</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('solde.add_solde_val') }}" method=post class=add-entry>
+                <fieldset>
+                    <div class="form-group">
+                        <label for="expenses" class="form-label mt-4">Value Solde</label>
+                        <input type=int class="form-control" id="solde" name=solde placeholder="Solde">
+                    </div>
+                    <div class="date-input">
+                        <label for="today_date" class="form-label mt-4">Choose a start date:</label><br>
+                        <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
+                      </div>
+                    <button type="submit" class="btn btn-primary">Store</button>
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+
+
+    <div class="text-center">
+        <a href="../">
+            <button type="button" class="btn btn-primary">Dashboard</button>
+        </a>
+    </div>
+
+</body>

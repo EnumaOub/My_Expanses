@@ -17,34 +17,20 @@ from My_Budget.sql.models import Entries, Categories, Budget
 
 def add_expanse(grocery=[]):
     if grocery:
-        if grocery[4] == "NaN":
-            e = Entries(grocery[0], grocery[1], grocery[2], grocery[3])
-            db_session.add(e)
-            db_session.commit()
-        else:
-            e = Entries(grocery[0], grocery[1], grocery[2], grocery[3], budget_title = grocery[4])
-            db_session.add(e)
-            db_session.commit()
+        e = Entries(grocery[0], grocery[1], grocery[2], grocery[3])
+        db_session.add(e)
+        db_session.commit()
+
     else:
-        if request.form.get('bdg', None) is None:
-            exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
-            exp["title"] = request.form['title']
-            exp["comment"] = request.form['comment']
-            exp["expanses"] = request.form['expanses']
-            exp["date_exp"] = request.form['date_exp']
-            e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
-            db_session.add(e)
-            db_session.commit()
-        else:
-            exp = {"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
-            exp["title"] = request.form['title']
-            exp["comment"] = request.form['comment']
-            exp["expanses"] = request.form['expanses']
-            exp["date_exp"] = request.form['date_exp']
-            exp["budget_title"] = request.form['bdg']
-            e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"], budget_title = exp["budget_title"])
-            db_session.add(e)
-            db_session.commit()
+        exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
+        exp["title"] = request.form['title']
+        exp["comment"] = request.form['comment']
+        exp["expanses"] = request.form['expanses']
+        exp["date_exp"] = request.form['date_exp']
+        e = Entries(exp["title"], exp["comment"], exp["expanses"], exp["date_exp"])
+        db_session.add(e)
+        db_session.commit()
+
 
 def add_expanse_db(df):
     exp = {"title": None, "comment": None, "expanses": None, "date_exp": None}
@@ -81,33 +67,31 @@ def get_expanse(exp_val={}, all=True, date=""):
     exp_tot =[]
     if all:
         with engine.connect() as db:
-            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
+            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
             WHERE expanses is not null""")).fetchall()
 
             for val in tot:
-                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
+                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
                 exp["id"] = val[0]
                 exp["title"]=val[1]
                 exp["comment"]=val[2]
                 exp["expanses"]=val[3]
                 exp["date_exp"]=val[4]
-                exp["budget_title"]=val[5]
                 
                 exp_tot.append(exp)
     elif date:
         with engine.connect() as db:
-            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
+            tot = db.execute(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
             WHERE expanses is not null
                 AND "date_exp" >= '"""+str(date)+"""'""")).fetchall()
 
             for val in tot:
-                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None, "budget_title":None}
+                exp = {"id": None,"title": None, "comment": None, "expanses": None, "date_exp": None}
                 exp["id"] = val[0]
                 exp["title"]=val[1]
                 exp["comment"]=val[2]
                 exp["expanses"]=val[3]
                 exp["date_exp"]=val[4]
-                exp["budget_title"]=val[5]
                 
                 exp_tot.append(exp)
 
@@ -115,10 +99,10 @@ def get_expanse(exp_val={}, all=True, date=""):
         if bool(exp_val):
             with engine.connect() as db:
                 exp_tot = db.execute(text("""SELECT * FROM public.entries WHERE id = :id AND
-                                    title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp AND budget_title =:budget_title
+                                    title = :title AND comment = :comment AND expanses = :expanses AND date_exp = :date_exp
                                     AND expanses is not null"""),
                                       {"id": exp_val["id"],"title": exp_val["title"], "comment": exp_val["comment"], "expanses": exp_val["expanses"],
-                                        "date_exp": exp_val["date_exp"], "budget_title": exp_val["budget_title"]}).fetchall()
+                                        "date_exp": exp_val["date_exp"]}).fetchall()
 
     return exp_tot
 
@@ -146,14 +130,19 @@ def get_total(month=""):
 
     return expanse_tot
 
-def plot_exp_month(date):
+def get_exp_month(date):
     lim = str((datetime.datetime.strptime(date, "%Y-%m-%d") + 
                                                 relativedelta(months=+1)).strftime('%Y-%m-%d'))
     with engine.connect() as db:
-        data = pd.read_sql(text("""SELECT id, title, comment, expanses, "date_exp", "budget_title" FROM public.entries 
+        data = pd.read_sql(text("""SELECT id, title, comment, expanses, "date_exp" FROM public.entries 
             WHERE expanses is not null
                 AND "date_exp" >= '"""+str(date)+"""'
                 AND "date_exp" < '"""+str(lim)+"""'"""), db)
+    return data
+
+
+def plot_exp_month(date):
+    data = get_exp_month(date)
 
     keys = data.columns
     print(keys)

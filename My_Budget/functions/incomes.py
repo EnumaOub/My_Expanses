@@ -13,7 +13,7 @@ import pandas as pd
 from dateutil.relativedelta import *
 
 from My_Budget.sql.database import db_session, init_db, engine
-from My_Budget.sql.models import Entries, Categories, Budget
+from My_Budget.sql.models import Entries
 
 
 def add_income():
@@ -28,6 +28,12 @@ def add_income():
     
     db_session.add(e)
     db_session.commit()
+
+def add_solde():
+    e = Entries(date_exp=request.form['date_exp'], solde=request.form['solde'])
+    db_session.add(e)
+    db_session.commit()
+
 
 def add_income_db(df):
     inc = {"title": None, "comment": None, "income": None, "date_exp": None}

@@ -8,6 +8,10 @@ from jinja2 import TemplateNotFound
 from My_Budget.functions.expanses import input_id, get_total, get_expanse, plot_exp_month, plot_all
 from My_Budget.functions.incomes import get_income, get_all_inc
 from My_Budget.functions.groceries import get_grocery
+from My_Budget.functions.categories import update_cat
+from My_Budget.functions.account import update_acc
+from My_Budget.functions.budget import plot_bdg_month
+
 
 main = Blueprint('home', __name__,
                         template_folder='templates')
@@ -33,7 +37,8 @@ def show_entries():
     #############################
 
     
-    
+    update_cat()
+    update_acc()
 
     expanse_tot = round(get_total(month=month_year),2) # get the total of expanses for the month
     income_tot = round(get_all_inc(month=month_year), 2)
@@ -44,10 +49,11 @@ def show_entries():
     
     graphJSON = plot_exp_month(month_year) # get the plot
     fig_tot, fig_bar = plot_all()
+    fig_bdg = plot_bdg_month(month_year)
 
     return render_template('show_entries.html', graphJSON=graphJSON, data=data,
                             expanse_tot=expanse_tot, income_tot=income_tot,
                               today_date=today_date, month=month,
                               entries=entries, incomes=incomes, groceries = groceries,
-                              fig_tot=fig_tot, fig_bar=fig_bar)
+                              fig_tot=fig_tot, fig_bar=fig_bar, fig_bdg=fig_bdg)
 

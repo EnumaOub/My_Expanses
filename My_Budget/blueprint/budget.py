@@ -68,3 +68,4 @@ def show_budget():
     cat_exp = get_all_cat() # Get categories to associate with budget
     
     return render_template('budget.html', data=data, entries=entries, kd_exp=cat_exp)
+

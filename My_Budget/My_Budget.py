@@ -13,6 +13,8 @@ from My_Budget.blueprint.file_read import file
 from My_Budget.blueprint.budget import budget
 from My_Budget.blueprint.categories import cat
 from My_Budget.blueprint.groceries import groceries
+from My_Budget.blueprint.solde import solde
+from My_Budget.blueprint.account import account
 
 app = Flask(__name__) # create the application instance 
 app.register_blueprint(table)
@@ -22,13 +24,14 @@ app.register_blueprint(file)
 app.register_blueprint(budget)
 app.register_blueprint(cat)
 app.register_blueprint(groceries)
+app.register_blueprint(solde)
+app.register_blueprint(account)
 app.config.from_object(__name__) # load config from this file , flaskr.py
 
 UPLOAD_FOLDER = r"D:\Learn\Python\Money"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'First_Flask.db'),
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'

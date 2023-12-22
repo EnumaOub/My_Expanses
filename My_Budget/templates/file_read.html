@@ -58,17 +58,22 @@
       </label>
     </div>
   </form>
-  {% if show_table %}
-  {% for table in file_table %}
-  {{ table|safe }}
-  {% endfor %}
-  {% endif %}
-  </div>
+  <form action="{{ url_for('file.dell_all') }}" method=post class=add-entry>
+      <button type="submit" class="btn btn-danger">DEL</button>
+  </form>
 
   <div class="text-center">
     <a href="../">
       <button type="button" class="btn btn-primary">Dashboard</button>
     </a>
   </div>
+  
+  {% if show_table %}
+  {% for table in file_table %}
+  {{ table|safe }}
+  {% endfor %}
+  {% endif %}
+
+  
 
 </body>

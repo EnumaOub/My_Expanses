@@ -33,13 +33,13 @@ def del_duplicate():
 def update_cat():
     sql1 = text("""SELECT title FROM entries""")
     sql2 = text("""SELECT name FROM categories""")
-    with engine.connect() as db:
+    with engine.begin() as db:
         df_entries = pd.read_sql(sql=sql1, con=db)
         df_cat = pd.read_sql(sql=sql2, con=db)
         df_entries=df_entries.drop_duplicates().dropna()
         df_entries=df_entries[(~df_entries.title.isin(df_cat.name))]
         df_entries.rename(columns={"title": "name"}, inplace=True)
-        df_entries.to_sql('categories', con=db, if_exists='append', index=False)
+        df_entries.to_sql('categories', schema='public', con=db, if_exists='append', index=False)
 
 def add_categories_from_list(lst_cat):
     categ = {"name": None}

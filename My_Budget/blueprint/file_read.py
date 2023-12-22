@@ -9,7 +9,7 @@ from flask import current_app
 
 ALLOWED_EXTENSIONS = {'csv', 'xls'}
 
-from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp
+from My_Budget.functions.read_file import read_csv, html_style, dwnl2db_inc, dwnl2db_exp, delentrie
 
 file = Blueprint('file', __name__,
                         template_folder='templates')
@@ -41,6 +41,16 @@ def get_path():
     
     df=read_csv() # Read file
     return render_template('file_read.html', show_table=1, file_table=df)
+
+### read and show csv
+@file.route('/file_del', methods=['POST'])
+def del_all():
+    if not session.get('logged_in'):
+        abort(401)
+    
+    delentrie() # Read file
+    return redirect(url_for('file.get_file'))
+
 
 ### Read csv
 @file.route('/file_read', methods=['GET', 'POST'])

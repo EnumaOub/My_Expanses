@@ -155,15 +155,6 @@
                 <label for="today_date" class="form-label mt-4">Choose a start date:</label><br>
                 <input class="form-control" type="date" name="date_exp" value="{{ today_date }}"><br>
               </div>
-              <div class="form-group">
-                <label for="bdg" class="form-label mt-4">Choose a budget</label>
-                <SELECT class="form-select" id="bdg" name="bdg" class=bdg>
-                  <option value="False" selected disabled hidden>Choose here</option>
-                  {% for k in bdg %}
-                  <OPTION value="{{ k }}">{{ k }}</option>
-                  {% endfor %}
-                </SELECT>
-              </div>
               <button type="submit" class="btn btn-primary">Store</button>
             </fieldset>
           </form>

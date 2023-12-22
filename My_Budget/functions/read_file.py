@@ -2,6 +2,7 @@ import pandas as pd
 import csv
 from sqlalchemy import text
 import numpy as np
+import xlrd
 
 try:
     from My_Budget.sql.database import db_session, init_db, engine
@@ -30,7 +31,8 @@ def read_csv(path):
                                     "Categorie operation", "Sous Categorie operation",
                                     "Montant operation"])
         print()
-        df.columns = ["Date", 'Catégorie 1', 'Remarques', 'Montant']
+        
+        df.columns = ["Date", 'Remarques', 'Catégorie 1', 'Montant']
         df.loc[df['Catégorie 1'] == "A catégoriser", 'Catégorie 1'] = "Unknown"
         df['Montant'] = pd.to_numeric(df['Montant'], downcast="float")
         df['Montant'] = df['Montant'].astype(float).round(2)
@@ -48,6 +50,19 @@ def html_style(df):
     df=df.replace('<tr>','<tr class="table-primary">')
     df=df.replace('"dataframe data"','"table table-hover"')
     return df
+
+def getsolde(path):
+    if ".xls" in path:
+        data = xlrd.open_workbook(path)
+        py_sheet = data.sheet_by_index(0)
+        solde = py_sheet.cell_value(0, 2)
+        e = Entries(solde=solde)
+        db_session.add(e)
+        db_session.commit()
+
+def delentrie():
+    with engine.connect() as db:
+        db.execute(text("""DELETE FROM public.entries"""))
 
 def expanse2db(df):
     res_df = pd.DataFrame()
@@ -123,6 +138,9 @@ def dwnl2db_exp(path):
 if __name__ == "__main__":
     path = r"D:\Learn\Python\Money\export_17_12_2023_13_09_36.xls"
     df = read_csv(path)
+    data = xlrd.open_workbook(path)
+    py_sheet = data.sheet_by_index(0)
+    print(py_sheet.cell_value(0, 2))
     exp_df = expanse2db(df)
     print(exp_df)
     inc_df = income2db(df)

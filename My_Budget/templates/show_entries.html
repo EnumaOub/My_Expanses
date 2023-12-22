@@ -75,8 +75,6 @@
         </span></a>
     </li>
 
-    <hr class="sidebar-divider">
-
     <li class="nav-item">
       <a class="nav-link" href="/budget">
         <i class="fas fa-fw fa-table"></i>
@@ -95,7 +93,6 @@
         </span></a>
     </li>
 
-    <hr class="sidebar-divider">
 
     <li class="nav-item">
       <a class="nav-link" href="/categories">
@@ -105,7 +102,6 @@
         </span></a>
     </li>
 
-    <hr class="sidebar-divider">
 
     <li class="nav-item">
       <a class="nav-link" href="/groceries">
@@ -122,7 +118,25 @@
     <ul>
       <li><a href="#dash">Dashboard</a></li>
       <li><a href="#plots">Plot accross time</a></li>
+      <li><a href="#bdg">Plot budgets</a></li>
     </ul>
+
+    <div id="bdg">
+      <div class="container-fluid">
+        <div class="row">
+            <div class="card-body">
+              <div id='chart_bdg' class='chart'>
+                <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+                <script>
+                  var graphs_bdg = {{ fig_bdg | safe}};
+                  Plotly.plot('chart_bdg', graphs_bdg, {});
+                </script>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
     <div id="plots">
       <div class="container-fluid">
 
@@ -164,6 +178,12 @@
           <!-- Topbar -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <a href="/solde">
+              <button type="button" class="btn btn-primary">Add Solde</button>
+          </a>
+          <a href="/account">
+            <button type="button" class="btn btn-primary">Add Account</button>
+        </a>
             <form action="{{ url_for('home.show_entries') }}" method=post class=add-entry>
               <label for="bdaymonth">Choose Month and Year:</label>
               <input type="month" id="bdaymonth" name="bdaymonth" value="{{ today_value }}" {{ today_value }}>
