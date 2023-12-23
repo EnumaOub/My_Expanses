@@ -248,7 +248,10 @@ def plot_all():
     
     return fig_tot, fig_bar
 
-
+def isempty():
+    with engine.begin() as db:
+        isdata = pd.read_sql(text("select * from public.entries"), db).empty
+    return isdata
 
 def plot_exp():
     with engine.connect() as db:

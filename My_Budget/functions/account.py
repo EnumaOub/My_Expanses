@@ -5,9 +5,14 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
      
 from sqlalchemy import create_engine, delete, func, and_
 from sqlalchemy import text
-
-from My_Budget.sql.database import db_session, init_db, engine
-from My_Budget.sql.models import Account
+try:
+    from My_Budget.sql.database import db_session, init_db, engine
+    from My_Budget.sql.models import Account
+except:
+    import sys
+    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget')
+    from sql.models import Account
+    from sql.database import db_session, init_db, engine
 
 
 def del_duplicate():

@@ -3,7 +3,9 @@ from sqlalchemy.dialects.postgresql import DOUBLE_PRECISION
 try:
     from My_Budget.sql.database import Base
 except:
-    from database import Base
+    import sys
+    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget')
+    from sql.database import Base
 
 class Entries(Base):
     __tablename__ = 'entries'

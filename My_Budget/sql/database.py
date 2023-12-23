@@ -2,9 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 try:
-    from set_config import set_config
-except:
     from My_Budget.sql.set_config import set_config
+except:
+    import sys
+    sys.path.insert(1, r'D:\Learn\Python\repos\First_Flask\My_Budget')
+    from sql.set_config import set_config
 
 params = set_config()
 engine = create_engine(f'postgresql://{params["user"]}:{params["password"]}@{params["host"]}/{params["database"]}',

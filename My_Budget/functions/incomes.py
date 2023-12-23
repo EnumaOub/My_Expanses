@@ -87,7 +87,7 @@ def get_income(account="Courant", inc_val={}, all=True, date=""):
     if all:
         with engine.connect() as db:
             tot = db.execute(text("""SELECT id, title, comment, income, "date_exp" FROM public.entries 
-            WHERE income is not nulll
+            WHERE income is not null
                                 AND account='"""+account+"""'""")).fetchall()
 
             for val in tot:

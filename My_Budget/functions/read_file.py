@@ -60,7 +60,9 @@ def getsolde(path):
         data = xlrd.open_workbook(path)
         py_sheet = data.sheet_by_index(0)
         solde = py_sheet.cell_value(0, 2)
-        e = Entries(solde=solde)
+        account = request.form['account']
+        taux = get_taux(request.form['account'])
+        e = Entries(solde=solde, account=account, taux=taux)
         db_session.add(e)
         db_session.commit()
 
@@ -74,6 +76,8 @@ def expanse2db(df):
     res_df["title"]=df["Catégorie 1"] 
     res_df["comment"]=df["Remarques"] 
     res_df["expanses"]=df["Dépense"] 
+    res_df["account"]=df["account"] 
+    res_df["taux"]=df["taux"] 
     try:
         res_df["expanses"]=res_df["expanses"].astype('float').round(2)
     except:
@@ -88,6 +92,8 @@ def income2db(df):
     res_df["title"]=df["Catégorie 1"] 
     res_df["comment"]=df["Remarques"] 
     res_df["income"]=df["Revenu"] 
+    res_df["account"]=df["account"] 
+    res_df["taux"]=df["taux"] 
     try:
         res_df["income"]=res_df["income"].astype('float').round(2)
     except:

@@ -113,6 +113,7 @@
 
   </ul>
 
+  {% if not nodata %}
 
   <div id="tabs">
     <ul>
@@ -186,12 +187,16 @@
                 <label for="account" class="form-label mt-4">Choose an Account</label>
                 <SELECT class="form-select" id="account" name="account" class=account>
                   {% for k in accounts %}
+                  {% if k == account_val %}
+                  <OPTION selected="selected" value="{{ k }}">{{ k }}</option>
+                  {% else %}
                   <OPTION value="{{ k }}">{{ k }}</option>
+                    {% endif %}
                   {% endfor %}
                 </SELECT>
               </div>
               <label for="bdaymonth">Choose Month and Year:</label>
-              <input type="month" id="bdaymonth" name="bdaymonth" value="{{ today_value }}" {{ today_value }}>
+              <input type="month" id="bdaymonth" name="bdaymonth" value="{{ date_val }}" {{ date_val }}>
               <button type="submit" class="btn btn-primary">Apply New Data</button>
             </form>
 
@@ -365,6 +370,7 @@
 
 </div>
 
+{% endif %}
 {% endif %}
 
 {% endblock %}
